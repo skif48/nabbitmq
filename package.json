@@ -4,7 +4,8 @@
   "description": "An open source RabbitMQ client for Node.js",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --config nodemon.config.json"
   },
   "repository": {
     "type": "git",
@@ -22,5 +23,14 @@
   "bugs": {
     "url": "https://github.com/skif48/nabbit/issues"
   },
-  "homepage": "https://github.com/skif48/nabbit#readme"
+  "homepage": "https://github.com/skif48/nabbit#readme",
+  "dependencies": {
+    "@types/node": "^10.12.21",
+    "amqplib": "^0.5.3",
+    "rxjs": "^6.4.0",
+    "typescript": "^3.3.1"
+  },
+  "devDependencies": {
+    "ts-node": "^8.0.2"
+  }
 }
