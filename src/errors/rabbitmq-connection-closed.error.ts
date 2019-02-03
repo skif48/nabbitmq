@@ -1,4 +1,4 @@
-import { RabbitMqError } from "./rabbitmq.error";
+import { RabbitMqError } from './rabbitmq.error';
 
 export class RabbitMqConnectionClosedError extends RabbitMqError {
   constructor(message?: string) {

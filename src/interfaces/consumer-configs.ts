@@ -3,13 +3,13 @@ export interface ConsumerConfigs {
     name: string;
     topic?: string;
     durable?: boolean;
-    arguments?: {[x: string]: any};
+    arguments?: { [x: string]: any };
   };
   exchange: {
     name: string;
     type: string;
     durable?: boolean;
-    arguments?: {[x: string]: any};
+    arguments?: { [x: string]: any };
   };
   prefetch?: number;
   noAckNeeded?: boolean;

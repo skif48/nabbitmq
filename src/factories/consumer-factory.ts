@@ -1,10 +1,10 @@
-import { Consumer } from "../models/consumer";
-import { ConsumerConfigs } from "../interfaces/consumer-configs";
 import { RabbitMqConsumerSetupError } from "../errors/rabbitmq-consumer-setup.error";
+import { ConsumerConfigs } from "../interfaces/consumer-configs";
+import { Consumer } from "../models/consumer";
 
 export class ConsumerFactory {
   private configs: ConsumerConfigs;
-  private connection: any;
+  private readonly connection: any;
 
   constructor(connection: any, configs?: ConsumerConfigs) {
     this.connection = connection;
@@ -21,7 +21,7 @@ export class ConsumerFactory {
       await consumer.init(this.connection);
       return consumer;
     } catch (err) {
-        throw new RabbitMqConsumerSetupError(err.message);
+      throw new RabbitMqConsumerSetupError(err.message);
     }
   }
 }

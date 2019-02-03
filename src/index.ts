@@ -1,28 +1,29 @@
-import { ConnectionFactory } from "./factories/connection-factory";
-import { ConsumerFactory } from "./factories/consumer-factory";
+import { RabbitMqChannelClosedError } from './errors/rabbitmq-channel-closed.error';
+import { RabbitMqChannelError } from './errors/rabbitmq-channel.error';
+import { RabbitMqConnectionClosedError } from './errors/rabbitmq-connection-closed.error';
+import { RabbitMqConnectionError } from './errors/rabbitmq-connection.error';
+import { RabbitMqConsumerSetupError } from './errors/rabbitmq-consumer-setup.error';
+import { RabbitMqError } from './errors/rabbitmq.error';
+import { ConnectionFactory } from './factories/connection-factory';
+import { ConsumerFactory } from './factories/consumer-factory';
+import { ConsumerConfigs } from './interfaces/consumer-configs';
+import { RabbitMqMessage } from './interfaces/rabbitmq-message';
+import { RabbitMqPeer } from './interfaces/rabbitmq-peer';
+import { RabbitMqConnection } from './models/connection';
+import { Consumer } from './models/consumer';
 
-async function main() {
-  const connectionFactory = new ConnectionFactory();
-  connectionFactory.setUri('amqp://localhost:5672');
-  const connection = await connectionFactory.newConnection();
-  const consumerFactory = new ConsumerFactory(connection, {
-    queue: {
-      name: 'super_queue',
-      topic: 'topic',
-      durable: true,
-    },
-    exchange: {
-      name: 'super_exchange',
-      type: 'direct',
-      durable: true,
-    }
-  });
-  const consumer = await consumerFactory.newConsumer<any>();
-
-  consumer.startConsuming().subscribe({
-    next: console.log,
-    error: console.error,
-  });
-}
-
-main();
+export {
+  ConnectionFactory,
+  ConsumerFactory,
+  RabbitMqError,
+  RabbitMqChannelClosedError,
+  RabbitMqChannelError,
+  RabbitMqConnectionError,
+  RabbitMqConnectionClosedError,
+  RabbitMqConsumerSetupError,
+  RabbitMqPeer,
+  RabbitMqMessage,
+  RabbitMqConnection,
+  Consumer,
+  ConsumerConfigs,
+};
