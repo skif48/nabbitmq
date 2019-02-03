@@ -1,9 +1,0 @@
-version: '3'
-services:
-  rabbit_mq:
-    build: 
-      dockerfile: "Dockerfile"
-      context: ..
-    ports:
-      - "5672:5672"
-      - "15672:15672"
