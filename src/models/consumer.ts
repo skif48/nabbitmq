@@ -1,6 +1,5 @@
 import { Observable, ReplaySubject } from 'rxjs';
-import { throwError } from 'rxjs/internal/observable/throwError';
-import { catchError, retry, timeout } from 'rxjs/operators';
+import { retry, timeout } from 'rxjs/operators';
 import { RabbitMqChannelCancelledError } from '../errors/rabbitmq-channel-cancelled.error';
 import { RabbitMqChannelClosedError } from '../errors/rabbitmq-channel-closed.error';
 import { RabbitMqChannelError } from '../errors/rabbitmq-channel.error';
