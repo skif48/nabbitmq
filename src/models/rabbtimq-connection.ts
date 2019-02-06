@@ -1,5 +1,10 @@
+import { Connection } from 'amqplib';
+
 export class RabbitMqConnection {
-  constructor(private readonly connection: any, private readonly uri: string) {}
+  constructor(
+    private readonly connection: Connection,
+    private readonly uri: string,
+  ) {}
 
   public getAmqpConnection() {
     return this.connection;

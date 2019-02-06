@@ -9,11 +9,10 @@ import { ConsumerFactory } from './factories/consumer-factory';
 import { PublisherFactory } from './factories/publisher-factory';
 import { ConsumerConfigs } from './interfaces/consumer-configs';
 import { PublisherConfigs } from './interfaces/publisher-configs';
-import { RabbitMqMessage } from './interfaces/rabbitmq-message';
 import { RabbitMqPeer } from './interfaces/rabbitmq-peer';
-import { RabbitMqConnection } from './models/connection';
 import { Consumer } from './models/consumer';
 import { Publisher } from './models/publisher';
+import { RabbitMqConnection } from './models/rabbtimq-connection';
 
 export {
   ConnectionFactory,
@@ -26,7 +25,6 @@ export {
   RabbitMqConnectionClosedError,
   RabbitMqConsumerSetupError,
   RabbitMqPeer,
-  RabbitMqMessage,
   RabbitMqConnection,
   Consumer,
   ConsumerConfigs,

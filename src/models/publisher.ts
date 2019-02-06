@@ -8,10 +8,10 @@ import { RabbitMqConnectionError } from '../errors/rabbitmq-connection.error';
 import { ConnectionFactory } from '../factories/connection-factory';
 import { PublisherConfigs } from '../interfaces/publisher-configs';
 import { RabbitMqPeer } from '../interfaces/rabbitmq-peer';
-import { RabbitMqConnection } from './connection';
+import { RabbitMqConnection } from './rabbtimq-connection';
 
 const DEFAULT_RECONNECT_TIMEOUT_MILLIS = 1000;
-const DEFAULT_RECONNECT_ATTEMPTS = 100;
+const DEFAULT_RECONNECT_ATTEMPTS = -1; // infinity
 
 export class Publisher implements RabbitMqPeer {
   private connection: RabbitMqConnection;
@@ -35,7 +35,7 @@ export class Publisher implements RabbitMqPeer {
 
     amqpConnection.on('error', (err) => {
       if (this.configs.reconnectAutomatically)
-        this.reconnect().toPromise().then(() => console.log(`Successfully reconnected to ${this.connection.getUri()}`));
+        this.reconnect().toPromise().then(() => console.log('Successfully reconnected to server'));
       this.subject.error(new RabbitMqConnectionError(err.message))
     });
     amqpConnection.on('close', () => this.subject.error(new RabbitMqConnectionClosedError('AMQP server closed connection')));
@@ -51,7 +51,12 @@ export class Publisher implements RabbitMqPeer {
         .newConnection()
         .then((connection) => this.init(connection))
         .then(() => subscriber.complete())
-        .catch((err) => console.error(`Error while reconnecting to RabbitMQ: ${err.code}`));
+        .catch((err) => {
+          if (err instanceof RabbitMqConnectionError)
+            console.error(`Error while reconnecting to RabbitMQ: ${err.code}`);
+          else
+            console.error(`Error while reconnecting to RabbitMQ: ${err.message}`);
+        });
     }).pipe(
       timeout(this.configs.reconnectTimeoutMillis || DEFAULT_RECONNECT_TIMEOUT_MILLIS),
       retry(this.configs.reconnectAttempts || DEFAULT_RECONNECT_ATTEMPTS),

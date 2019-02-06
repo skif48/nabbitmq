@@ -1,7 +1,7 @@
 {
   "name": "nabbitmq",
-  "version": "0.0.1-beta",
-  "description": "An open source RabbitMQ client for Node.js",
+  "version": "0.0.2-beta",
+  "description": "An open source RabbitMQ client based on RxJS streams",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -22,7 +22,9 @@
     "Node.js",
     "AMQP",
     "AMQP-0-9-1",
-    "Queue"
+    "Queue",
+    "MQ",
+    "Message Queue"
   ],
   "author": "Vladyslav Usenko",
   "license": "MIT",
@@ -31,11 +33,12 @@
   },
   "homepage": "https://github.com/skif48/nabbit#readme",
   "dependencies": {
-    "@types/node": "^10.12.21",
+    "@types/amqplib": "^0.5.9",
     "amqplib": "^0.5.3",
     "rxjs": "^6.4.0"
   },
   "devDependencies": {
+    "@types/node": "^10.12.21",
     "prettier": "^1.16.4",
     "ts-node": "^8.0.2",
     "tslint": "^5.12.1",

@@ -1,23 +1,21 @@
 import { RabbitMqConsumerSetupError } from "../errors/rabbitmq-consumer-setup.error";
 import { ConsumerConfigs } from "../interfaces/consumer-configs";
 import { Consumer } from "../models/consumer";
+import { RabbitMqConnection } from '../models/rabbtimq-connection';
 
 export class ConsumerFactory {
-  private configs: ConsumerConfigs;
-  private readonly connection: any;
-
-  constructor(connection: any, configs?: ConsumerConfigs) {
-    this.connection = connection;
-    this.configs = configs;
-  }
+  constructor(
+    private readonly connection: RabbitMqConnection,
+    private configs?: ConsumerConfigs,
+  ) {}
 
   public setConfigs(configs: ConsumerConfigs) {
     this.configs = configs;
   }
 
-  public async newConsumer<T>(): Promise<Consumer<T>> {
+  public async newConsumer(): Promise<Consumer> {
     try {
-      const consumer = new Consumer<T>(this.configs);
+      const consumer = new Consumer(this.configs);
       await consumer.init(this.connection);
       return consumer;
     } catch (err) {

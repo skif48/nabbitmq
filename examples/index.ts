@@ -19,7 +19,7 @@ async function main() {
     reconnectAutomatically: true,
     noAckNeeded: false,
   });
-  const consumer = await consumerFactory.newConsumer<any>();
+  const consumer = await consumerFactory.newConsumer();
 
   consumer.startConsuming().subscribe({
     next: console.log,

@@ -1,3 +1,4 @@
+import { Channel, Connection, Message } from 'amqplib';
 import { Observable, ReplaySubject } from 'rxjs';
 import { retry, timeout } from 'rxjs/operators';
 import { RabbitMqChannelCancelledError } from '../errors/rabbitmq-channel-cancelled.error';
@@ -8,18 +9,18 @@ import { RabbitMqConnectionError } from '../errors/rabbitmq-connection.error';
 import { ConnectionFactory } from '../factories/connection-factory';
 import { ConsumerConfigs } from '../interfaces/consumer-configs';
 import { RabbitMqPeer } from '../interfaces/rabbitmq-peer';
-import { RabbitMqConnection } from './connection';
+import { RabbitMqConnection } from './rabbtimq-connection';
 
 const DEFAULT_RECONNECT_TIMEOUT_MILLIS = 1000;
 const DEFAULT_RECONNECT_ATTEMPTS = -1; // infinity
 
-export class Consumer<T> implements RabbitMqPeer {
-  private readonly subject: ReplaySubject<T>;
-  private channel: any;
+export class Consumer implements RabbitMqPeer {
+  private readonly subject: ReplaySubject<Message>;
+  private channel: Channel;
   private connection: RabbitMqConnection;
 
   constructor(private configs: ConsumerConfigs) {
-    this.subject = new ReplaySubject<T>();
+    this.subject = new ReplaySubject<Message>();
   }
 
   public async init(connection: RabbitMqConnection): Promise<void> {
@@ -37,9 +38,9 @@ export class Consumer<T> implements RabbitMqPeer {
     await this.channel.bindQueue(queueMetadata.queue, this.configs.exchange.name, this.configs.queue.topic || '');
 
     if (this.configs.prefetch)
-      this.channel.prefetch(this.configs.prefetch);
+      await this.channel.prefetch(this.configs.prefetch);
 
-    this.channel.consume(
+    await this.channel.consume(
       this.configs.queue.name,
       (message: any): void => {
         if (message === null)
@@ -69,8 +70,10 @@ export class Consumer<T> implements RabbitMqPeer {
         .then((connection) => this.init(connection))
         .then(() => subscriber.complete())
         .catch((err) => {
-          console.error(err);
-          console.error(`Error while reconnecting to RabbitMQ: ${err.code}`)
+          if (err instanceof RabbitMqConnectionError)
+            console.error(`Error while reconnecting to server: ${err.code}`);
+          else
+            console.error(`Error while reconnecting to server: ${err.message}`);
         });
     }).pipe(
       timeout(this.configs.reconnectTimeoutMillis || DEFAULT_RECONNECT_TIMEOUT_MILLIS),
@@ -78,27 +81,27 @@ export class Consumer<T> implements RabbitMqPeer {
     );
   }
 
-  public closeChannel(): void {
-    this.channel.close();
+  public async closeChannel(): Promise<void> {
+    await this.channel.close();
   }
 
   public getActiveChannel(): any {
     return this.channel;
   }
 
-  public getActiveConnection(): any {
+  public getActiveConnection(): Connection {
     return this.connection.getAmqpConnection();
   }
 
-  public startConsuming(): Observable<T> {
+  public startConsuming(): ReplaySubject<Message> {
     return this.subject;
   }
 
-  public commitMessage(amqpMessage: any) {
+  public commitMessage(amqpMessage: Message) {
     this.channel.ack(amqpMessage);
   }
 
-  public rejectMessage(message, allUpToCurrent = false, requeue = false) {
+  public rejectMessage(message: Message, allUpToCurrent = false, requeue = false) {
     this.channel.nack(message, allUpToCurrent, requeue);
   }
 }
