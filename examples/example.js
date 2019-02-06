@@ -1,5 +1,4 @@
-import { ConnectionFactory, ConsumerFactory } from '../src';
-import { PublisherFactory } from '../src/factories/publisher-factory';
+const { ConnectionFactory, ConsumerFactory, PublisherFactory } = require('../lib');
 
 async function main() {
   const connectionFactory = new ConnectionFactory();
@@ -16,10 +15,8 @@ async function main() {
       type: 'direct',
       durable: true,
     },
-    reconnectAutomatically: true,
-    noAckNeeded: false,
   });
-  const consumer = await consumerFactory.newConsumer<any>();
+  const consumer = await consumerFactory.newConsumer();
 
   consumer.startConsuming().subscribe({
     next: console.log,
@@ -34,12 +31,9 @@ async function main() {
       type: 'direct',
       durable: true,
     },
-    reconnectAutomatically: true,
   });
 
   const publisher = await publisherFactory.newPublisher();
-
-  publisher.actionsStream().error((err) => console.error(err));
 
   setInterval(() => publisher.publishMessage(Buffer.from('hello hello!'), 'topic'), 1000);
 }

@@ -16,6 +16,7 @@ export interface ConsumerConfigs {
   defaultEncoding?: string;
   reconnectTimeoutMillis?: number;
   reconnectAttempts?: number;
+  reconnectAutomatically?: boolean;
   deadLetterQueue?: {
     name: string;
     exchangeName: string;

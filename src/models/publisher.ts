@@ -33,7 +33,11 @@ export class Publisher implements RabbitMqPeer {
     this.channel = await amqpConnection.createConfirmChannel();
     await this.channel.assertExchange(this.configs.exchange.name, this.configs.exchange.type, exchangeOptions);
 
-    amqpConnection.on('error', (err) => this.subject.error(new RabbitMqConnectionError(err.message)));
+    amqpConnection.on('error', (err) => {
+      if (this.configs.reconnectAutomatically)
+        this.reconnect().toPromise().then(() => console.log(`Successfully reconnected to ${this.connection.getUri()}`));
+      this.subject.error(new RabbitMqConnectionError(err.message))
+    });
     amqpConnection.on('close', () => this.subject.error(new RabbitMqConnectionClosedError('AMQP server closed connection')));
     this.channel.on('error', (err) => this.subject.error(new RabbitMqChannelError(err.message)));
     this.channel.on('close', () => this.subject.error(new RabbitMqChannelClosedError('AMQP server closed channel')));

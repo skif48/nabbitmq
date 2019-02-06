@@ -8,4 +8,5 @@ export interface PublisherConfigs {
   defaultEncoding?: string;
   reconnectTimeoutMillis?: number;
   reconnectAttempts?: number;
+  reconnectAutomatically?: boolean;
 }

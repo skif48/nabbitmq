@@ -11,7 +11,7 @@ import { RabbitMqPeer } from '../interfaces/rabbitmq-peer';
 import { RabbitMqConnection } from './connection';
 
 const DEFAULT_RECONNECT_TIMEOUT_MILLIS = 1000;
-const DEFAULT_RECONNECT_ATTEMPTS = 100;
+const DEFAULT_RECONNECT_ATTEMPTS = -1; // infinity
 
 export class Consumer<T> implements RabbitMqPeer {
   private readonly subject: ReplaySubject<T>;
@@ -50,7 +50,11 @@ export class Consumer<T> implements RabbitMqPeer {
       { noAck: this.configs.noAckNeeded },
     );
 
-    amqpConnection.on('error', (err) => this.subject.error(new RabbitMqConnectionError(err.message)));
+    amqpConnection.on('error', (err) => {
+      if (this.configs.reconnectAutomatically)
+        this.reconnect().toPromise().then(() => console.log(`Successfully reconnected to ${this.connection.getUri()}`));
+      this.subject.error(new RabbitMqConnectionError(err.message))
+    });
     amqpConnection.on('close', () => this.subject.error(new RabbitMqConnectionClosedError('AMQP server closed connection')));
     this.channel.on('error', (err) => this.subject.error(new RabbitMqChannelError(err.message)));
     this.channel.on('close', () => this.subject.error(new RabbitMqChannelClosedError('AMQP server closed channel')));
@@ -64,10 +68,13 @@ export class Consumer<T> implements RabbitMqPeer {
         .newConnection()
         .then((connection) => this.init(connection))
         .then(() => subscriber.complete())
-        .catch((err) => console.error(`Error while reconnecting to RabbitMQ: ${err.code}`));
+        .catch((err) => {
+          console.error(err);
+          console.error(`Error while reconnecting to RabbitMQ: ${err.code}`)
+        });
     }).pipe(
       timeout(this.configs.reconnectTimeoutMillis || DEFAULT_RECONNECT_TIMEOUT_MILLIS),
-      retry(this.configs.reconnectAttempts || DEFAULT_RECONNECT_ATTEMPTS),
+      retry(this.configs.reconnectTimeoutMillis || DEFAULT_RECONNECT_ATTEMPTS),
     );
   }
 
