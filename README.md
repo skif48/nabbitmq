@@ -1,7 +1,8 @@
+
 <p align="center">
   <img src="https://i.imgur.com/zoFHpgH.png" height="160" alt="NabbitMQ Logo"/></a> 
+  <h1>NabbitMQ</h1>
 </p>
-# NabbitMQ
 
 **Any suggestions, any criticism and any help from the open source community is warmly welcomed!**
 
