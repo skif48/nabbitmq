@@ -6,15 +6,18 @@ import { RabbitMqConsumerSetupError } from './errors/rabbitmq-consumer-setup.err
 import { RabbitMqError } from './errors/rabbitmq.error';
 import { ConnectionFactory } from './factories/connection-factory';
 import { ConsumerFactory } from './factories/consumer-factory';
+import { PublisherFactory } from './factories/publisher-factory';
 import { ConsumerConfigs } from './interfaces/consumer-configs';
-import { RabbitMqMessage } from './interfaces/rabbitmq-message';
+import { PublisherConfigs } from './interfaces/publisher-configs';
 import { RabbitMqPeer } from './interfaces/rabbitmq-peer';
-import { RabbitMqConnection } from './models/connection';
 import { Consumer } from './models/consumer';
+import { Publisher } from './models/publisher';
+import { RabbitMqConnection } from './models/rabbtimq-connection';
 
 export {
   ConnectionFactory,
   ConsumerFactory,
+  PublisherFactory,
   RabbitMqError,
   RabbitMqChannelClosedError,
   RabbitMqChannelError,
@@ -22,8 +25,9 @@ export {
   RabbitMqConnectionClosedError,
   RabbitMqConsumerSetupError,
   RabbitMqPeer,
-  RabbitMqMessage,
   RabbitMqConnection,
   Consumer,
   ConsumerConfigs,
+  Publisher,
+  PublisherConfigs,
 };

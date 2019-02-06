@@ -1,9 +1,10 @@
 import * as amqp from 'amqplib';
 import { RabbitMqConnectionError } from '../errors/rabbitmq-connection.error';
-import { RabbitMqConnection } from '../models/connection';
+import { RabbitMqConnection } from '../models/rabbtimq-connection';
 
 export class ConnectionFactory {
   private uri: string;
+  private options: amqp.Options.Connect;
 
   constructor() {}
 
@@ -11,12 +12,16 @@ export class ConnectionFactory {
     this.uri = uri;
   }
 
+  public setOptions(options: amqp.Options.Connect) {
+    this.options = options;
+  }
+
   public async newConnection() {
     try {
-      const amqpConnection = await amqp.connect(this.uri);
+      const amqpConnection = await amqp.connect(this.options || this.uri);
       return new RabbitMqConnection(amqpConnection, this.uri);
     } catch (error) {
-      throw new RabbitMqConnectionError(`Error while connecting to RabbitMQ: ${error.message}`);
+      throw new RabbitMqConnectionError(`Error while connecting to RabbitMQ: ${error.message}`, error.code);
     }
   }
 }
