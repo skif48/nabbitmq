@@ -1,5 +1,5 @@
-[](https://drive.google.com/file/d/1HUadi8d-VAVZhYv3gCzzh7CN0Xli_qY7/view?usp=sharing) 
-# nabbitmq
+# NabbitMQ:
+![](https://imgur.com/a/gMiT1Vf) 
 An open source RabbitMQ client based on RxJS streams for Node.js runtime
 
 **Any suggestions, any criticism and any help from the open source community is warmly welcomed!**
