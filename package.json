@@ -1,10 +1,9 @@
 {
   "name": "nabbitmq",
-  "version": "0.0.2-beta",
+  "version": "0.0.3",
   "description": "An open source RabbitMQ client based on RxJS streams",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "example": "nodemon --config ./examples/nodemon.config.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
