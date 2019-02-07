@@ -5,9 +5,9 @@ export interface ConsumerConfigs {
     durable?: boolean;
     arguments?: { [x: string]: any };
   };
-  exchange: {
-    name: string;
-    type: string;
+  exchange?: {
+    name?: string;
+    type?: string;
     durable?: boolean;
     arguments?: { [x: string]: any };
   };
@@ -16,7 +16,8 @@ export interface ConsumerConfigs {
   defaultEncoding?: string;
   reconnectTimeoutMillis?: number;
   reconnectAttempts?: number;
-  reconnectAutomatically?: boolean;
+  autoReconnect?: boolean;
+  noDeadLetterQueue?: boolean;
   deadLetterQueue?: {
     name: string;
     exchangeName: string;
