@@ -29,7 +29,7 @@ In the end, the main principle and goal is to have a solid and reliable solution
 
 ### Quick start
 
-This snippet shows you how you easily spin up a solid RabbitMQ setup and quickly start to consume stream of events from it. Under the hood, NabbitMQ creates all necessary bindings, exchanges and dead letter queues, handles **reconnect logic** for you in such way that **you don't even need to rebuild the consumer**!
+This snippet demonstrates how you can easily spin up a solid RabbitMQ setup and quickly start to consume a stream of events from it. Under the hood, NabbitMQ creates all necessary bindings, exchanges and dead letter queues, handles **reconnect logic** for you in such way that **you don't even need to rebuild the consumer**!
 
 ```typescript
 import { ConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelClosedError, RabbitMqError } from 'nabbitmq';
@@ -55,4 +55,4 @@ main();
 
 ### More to come!
 
-Current version is 0.0.3-alpha. It has already been successfully tested in a real world use case with plugin-based exchanges, however it's just the beginning of this library. Working hard on making it better and better!
+Current version is 0.0.3. It has already been successfully tested in a real world use case with plugin-based exchanges, however it's just the beginning of this library. Working hard on making it better and better!
