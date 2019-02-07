@@ -1,6 +1,8 @@
-[](https://drive.google.com/file/d/1HUadi8d-VAVZhYv3gCzzh7CN0Xli_qY7/view?usp=sharing) 
-# nabbitmq
-An open source RabbitMQ client based on RxJS streams for Node.js runtime
+
+<p align="center">
+  <img src="https://i.imgur.com/zoFHpgH.png" height="160" alt="NabbitMQ Logo"/></a> 
+  <h1>NabbitMQ</h1>
+</p>
 
 **Any suggestions, any criticism and any help from the open source community is warmly welcomed!**
 
