@@ -2,7 +2,7 @@
   "name": "nabbitmq",
   "version": "0.0.3",
   "description": "An open source RabbitMQ client based on RxJS streams",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "example": "nodemon --config ./examples/nodemon.config.json",
     "build": "tsc",
@@ -10,8 +10,7 @@
     "lint": "tslint -p tsconfig.json"
   },
   "files": [
-    "lib/**/*",
-    "index.js"
+    "lib/**/*"
   ],
   "repository": {
     "type": "git",

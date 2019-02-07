@@ -1,4 +1,4 @@
-import { ConnectionFactory, ConsumerFactory, PublisherFactory } from '../index';
+import { ConnectionFactory, ConsumerFactory, PublisherFactory } from '../src';
 
 async function main() {
   const connectionFactory = new ConnectionFactory();
