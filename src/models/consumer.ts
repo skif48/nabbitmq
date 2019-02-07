@@ -13,6 +13,7 @@ import { RabbitMqConnection } from './rabbtimq-connection';
 
 const DEFAULT_RECONNECT_TIMEOUT_MILLIS = 1000;
 const DEFAULT_RECONNECT_ATTEMPTS = -1; // infinity
+const DEFAULT_PREFETCH = 100;
 
 export class Consumer implements RabbitMqPeer {
   private readonly subject: ReplaySubject<Message>;
@@ -27,22 +28,32 @@ export class Consumer implements RabbitMqPeer {
     this.connection = connection;
     const amqpConnection = this.connection.getAmqpConnection();
     const exchangeOptions: { [x: string]: any } = {};
-    exchangeOptions.durable = this.configs.exchange.durable || false;
-    exchangeOptions.arguments = this.configs.exchange.arguments || {};
+
     this.channel = await amqpConnection.createChannel();
+    if (!this.configs.noDeadLetterQueue) {
+      await this.channel.assertExchange(`exchange_dlq_${this.configs.queue.name}`, 'fanout');
+      const dlqMetadata = await this.channel.assertQueue(`dlq_${this.configs.queue.name}`);
+      await this.channel.bindQueue(dlqMetadata.queue, `exchange_dlq_${this.configs.queue.name}`, '');
+    }
+
+    if (this.configs.exchange) {
+      exchangeOptions.durable = this.configs.exchange.durable || false;
+      exchangeOptions.arguments = this.configs.exchange.arguments || {};
+    }
+
     await this.channel.assertExchange(this.configs.exchange.name, this.configs.exchange.type, exchangeOptions);
     const queueMetadata = await this.channel.assertQueue(this.configs.queue.name, {
       durable: this.configs.queue.durable || false,
       arguments: this.configs.queue.arguments,
+      deadLetterExchange: this.configs.noDeadLetterQueue ? undefined : `dlq_${this.configs.queue.name}`,
     });
     await this.channel.bindQueue(queueMetadata.queue, this.configs.exchange.name, this.configs.queue.topic || '');
 
-    if (this.configs.prefetch)
-      await this.channel.prefetch(this.configs.prefetch);
+    await this.channel.prefetch(this.configs.prefetch || DEFAULT_PREFETCH);
 
     await this.channel.consume(
       this.configs.queue.name,
-      (message: any): void => {
+      (message: Message): void => {
         if (message === null)
           return void this.subject.error(new RabbitMqChannelCancelledError('Channel was cancelled by the server'));
         else
@@ -52,7 +63,7 @@ export class Consumer implements RabbitMqPeer {
     );
 
     amqpConnection.on('error', (err) => {
-      if (this.configs.reconnectAutomatically)
+      if (this.configs.autoReconnect !== false)
         this.reconnect().toPromise().then(() => console.log(`Successfully reconnected to ${this.connection.getUri()}`));
       this.subject.error(new RabbitMqConnectionError(err.message))
     });

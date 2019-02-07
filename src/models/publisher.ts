@@ -28,13 +28,13 @@ export class Publisher implements RabbitMqPeer {
     this.connection = connection;
     const amqpConnection = this.connection.getAmqpConnection();
     const exchangeOptions: { [x: string]: any } = {};
-    exchangeOptions.durable = this.configs.exchange.durable || false;
+    exchangeOptions.durable = this.configs.exchange.durable;
     exchangeOptions.arguments = this.configs.exchange.arguments || {};
     this.channel = await amqpConnection.createConfirmChannel();
-    await this.channel.assertExchange(this.configs.exchange.name, this.configs.exchange.type, exchangeOptions);
+    await this.channel.assertExchange(this.configs.exchange.name, this.configs.exchange.type || 'topic', exchangeOptions);
 
     amqpConnection.on('error', (err) => {
-      if (this.configs.reconnectAutomatically)
+      if (this.configs.autoReconnect !== false)
         this.reconnect().toPromise().then(() => console.log('Successfully reconnected to server'));
       this.subject.error(new RabbitMqConnectionError(err.message))
     });
