@@ -53,9 +53,9 @@ export class Publisher implements RabbitMqPeer {
         .then(() => subscriber.complete())
         .catch((err) => {
           if (err instanceof RabbitMqConnectionError)
-            console.error(`Error while reconnecting to RabbitMQ: ${err.code}`);
+            console.error(`Error while reconnecting to server: ${err.code}`);
           else
-            console.error(`Error while reconnecting to RabbitMQ: ${err.message}`);
+            console.error(`Error while reconnecting to server: ${err.message}`);
         });
     }).pipe(
       timeout(this.configs.reconnectTimeoutMillis || DEFAULT_RECONNECT_TIMEOUT_MILLIS),

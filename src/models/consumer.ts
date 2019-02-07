@@ -36,18 +36,22 @@ export class Consumer implements RabbitMqPeer {
       await this.channel.bindQueue(dlqMetadata.queue, `exchange_dlq_${this.configs.queue.name}`, '');
     }
 
+    let exchangeName = `exchange_${this.configs.queue.name}`;
+    let exchangeType = 'topic';
     if (this.configs.exchange) {
-      exchangeOptions.durable = this.configs.exchange.durable || false;
+      exchangeOptions.durable = typeof this.configs.exchange.durable === 'undefined' ? true : this.configs.exchange.durable;
       exchangeOptions.arguments = this.configs.exchange.arguments || {};
+      exchangeName = this.configs.exchange.name;
+      exchangeType = this.configs.exchange.type;
     }
 
-    await this.channel.assertExchange(this.configs.exchange.name, this.configs.exchange.type, exchangeOptions);
+    await this.channel.assertExchange(exchangeName, exchangeType, exchangeOptions);
     const queueMetadata = await this.channel.assertQueue(this.configs.queue.name, {
-      durable: this.configs.queue.durable || false,
+      durable: typeof this.configs.queue.durable === 'undefined' ? true : this.configs.queue.durable,
       arguments: this.configs.queue.arguments,
       deadLetterExchange: this.configs.noDeadLetterQueue ? undefined : `dlq_${this.configs.queue.name}`,
     });
-    await this.channel.bindQueue(queueMetadata.queue, this.configs.exchange.name, this.configs.queue.topic || '');
+    await this.channel.bindQueue(queueMetadata.queue, exchangeName, this.configs.queue.topic || exchangeType);
 
     await this.channel.prefetch(this.configs.prefetch || DEFAULT_PREFETCH);
 
@@ -64,7 +68,7 @@ export class Consumer implements RabbitMqPeer {
 
     amqpConnection.on('error', (err) => {
       if (this.configs.autoReconnect !== false)
-        this.reconnect().toPromise().then(() => console.log(`Successfully reconnected to ${this.connection.getUri()}`));
+        this.reconnect().toPromise().then(() => console.log('Successfully reconnected to server'));
       this.subject.error(new RabbitMqConnectionError(err.message))
     });
     amqpConnection.on('close', () => this.subject.error(new RabbitMqConnectionClosedError('AMQP server closed connection')));

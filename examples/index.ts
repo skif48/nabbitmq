@@ -10,7 +10,7 @@ async function main() {
   consumer.startConsuming().subscribe({next: console.log, error: console.error});
 
   const anotherConnection = await connectionFactory.newConnection();
-  const publisherFactory = new PublisherFactory(anotherConnection, {exchange: {name: 'super_exchange'}});
+  const publisherFactory = new PublisherFactory(anotherConnection, {exchange: {name: 'exchange_super_queue'}});
   const publisher = await publisherFactory.newPublisher();
   setInterval(() => publisher.publishMessage(Buffer.from('hello hello!'), 'topic'), 1000);
 }
