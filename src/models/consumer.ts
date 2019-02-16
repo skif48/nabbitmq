@@ -9,87 +9,125 @@ import { RabbitMqConnectionError } from '../errors/rabbitmq-connection.error';
 import { ConnectionFactory } from '../factories/connection-factory';
 import { ConsumerConfigs } from '../interfaces/consumer-configs';
 import { RabbitMqPeer } from '../interfaces/rabbitmq-peer';
-import { RabbitMqConnection } from './rabbtimq-connection';
+import { RabbitMqConnection } from './rabbitmq-connection';
 
 const DEFAULT_RECONNECT_TIMEOUT_MILLIS = 1000;
 const DEFAULT_RECONNECT_ATTEMPTS = -1; // infinity
 const DEFAULT_PREFETCH = 100;
 
 export class Consumer implements RabbitMqPeer {
-  private readonly subject: ReplaySubject<Message>;
+  private readonly rawConfigs: ConsumerConfigs;
+  private readonly configs: ConsumerConfigs;
+  private subject: ReplaySubject<Message>;
   private channel: Channel;
   private connection: RabbitMqConnection;
 
-  constructor(private configs: ConsumerConfigs) {
+  constructor(configs: ConsumerConfigs) {
+    this.rawConfigs = configs;
+    this.configs = this.fillEmptyConfigsWithDefaults(this.rawConfigs);
+    this.initStream();
+  }
+
+  private initStream() {
     this.subject = new ReplaySubject<Message>();
   }
 
-  public async init(connection: RabbitMqConnection): Promise<void> {
-    this.connection = connection;
-    const amqpConnection = this.connection.getAmqpConnection();
+  private fillEmptyConfigsWithDefaults(rawConfigs?: ConsumerConfigs): ConsumerConfigs {
+    let filledConfigs = Object.assign({}, rawConfigs);
+    if (!filledConfigs.queue || !filledConfigs.queue.name)
+      throw new Error('Name of the queue has to be provided');
+
+    filledConfigs.queue.durable = typeof filledConfigs.queue.durable === 'undefined' ? true : filledConfigs.queue.durable;
+    filledConfigs.queue.arguments = filledConfigs.queue.arguments || {};
+
+    filledConfigs.exchange = filledConfigs.exchange || {};
+    filledConfigs.exchange.name = filledConfigs.exchange.name || `exchange_${filledConfigs.queue.name}`;
+    filledConfigs.exchange.durable = typeof filledConfigs.exchange.durable === 'undefined' ? true : filledConfigs.exchange.durable;
+    filledConfigs.exchange.arguments = filledConfigs.exchange.arguments || {};
+    filledConfigs.exchange.type = filledConfigs.exchange.type || 'direct';
+
+    if (filledConfigs.exchange.type === 'topic' && !filledConfigs.queue.bindingPattern)
+      throw new Error('In case of topic exchanges, routing pattern has to be provided for the queue');
+
+    if (filledConfigs.exchange.type === 'direct')
+      filledConfigs.queue.bindingPattern = filledConfigs.queue.bindingPattern || `${filledConfigs.queue.name}_rk`;
+    else if (filledConfigs.exchange.type === 'fanout')
+      filledConfigs.queue.bindingPattern = '';
+
+    filledConfigs.autoAck = typeof filledConfigs.autoAck === 'undefined' ? false : filledConfigs.autoAck;
+    filledConfigs.prefetch = filledConfigs.prefetch || DEFAULT_PREFETCH;
+    filledConfigs.reconnectAttempts = filledConfigs.reconnectAttempts || DEFAULT_RECONNECT_ATTEMPTS;
+    filledConfigs.reconnectTimeoutMillis = filledConfigs.reconnectTimeoutMillis || DEFAULT_RECONNECT_TIMEOUT_MILLIS;
+
+    if (typeof filledConfigs.noDeadLetterQueue !== 'undefined' && filledConfigs.noDeadLetterQueue === true)
+      delete filledConfigs.deadLetterQueue;
+    else {
+      filledConfigs.deadLetterQueue = filledConfigs.deadLetterQueue || {};
+      filledConfigs.deadLetterQueue.name = filledConfigs.deadLetterQueue.name || `dlq_${filledConfigs.queue.name}`;
+      filledConfigs.deadLetterQueue.exchangeName = filledConfigs.deadLetterQueue.exchangeName || `exchange_${filledConfigs.deadLetterQueue.name}`;
+      filledConfigs.deadLetterQueue.exchangeType = filledConfigs.deadLetterQueue.exchangeType || 'fanout';
+    }
+
+    return filledConfigs;
+  }
+
+  private async defaultSetup(connection: Connection): Promise<Channel> {
+    const channel = await connection.createChannel();
     const exchangeOptions: { [x: string]: any } = {};
 
-    this.channel = await amqpConnection.createChannel();
-    if (!this.configs.noDeadLetterQueue) {
-      await this.channel.assertExchange(`exchange_dlq_${this.configs.queue.name}`, 'fanout');
-      const dlqMetadata = await this.channel.assertQueue(`dlq_${this.configs.queue.name}`);
-      await this.channel.bindQueue(dlqMetadata.queue, `exchange_dlq_${this.configs.queue.name}`, '');
+    if (this.configs.deadLetterQueue) {
+      await channel.assertExchange(this.configs.deadLetterQueue.exchangeName, this.configs.deadLetterQueue.exchangeType);
+      const dlqMetadata = await channel.assertQueue(this.configs.deadLetterQueue.name);
+      await channel.bindQueue(dlqMetadata.queue, this.configs.deadLetterQueue.exchangeName, '');
     }
 
-    let exchangeName = `exchange_${this.configs.queue.name}`;
-    let exchangeType = 'topic';
-    if (this.configs.exchange) {
-      exchangeOptions.durable = typeof this.configs.exchange.durable === 'undefined' ? true : this.configs.exchange.durable;
-      exchangeOptions.arguments = this.configs.exchange.arguments || {};
-      exchangeName = this.configs.exchange.name;
-      exchangeType = this.configs.exchange.type;
-    }
-
-    await this.channel.assertExchange(exchangeName, exchangeType, exchangeOptions);
-    const queueMetadata = await this.channel.assertQueue(this.configs.queue.name, {
-      durable: typeof this.configs.queue.durable === 'undefined' ? true : this.configs.queue.durable,
+    await channel.assertExchange(this.configs.exchange.name, this.configs.exchange.type, exchangeOptions);
+    const queueMetadata = await channel.assertQueue(this.configs.queue.name, {
+      durable: this.configs.queue.durable,
       arguments: this.configs.queue.arguments,
-      deadLetterExchange: this.configs.noDeadLetterQueue ? undefined : `dlq_${this.configs.queue.name}`,
+      deadLetterExchange: this.configs.deadLetterQueue ? this.configs.deadLetterQueue.name : undefined,
     });
-    await this.channel.bindQueue(queueMetadata.queue, exchangeName, this.configs.queue.topic || exchangeType);
 
-    await this.channel.prefetch(this.configs.prefetch || DEFAULT_PREFETCH);
+    await channel.bindQueue(queueMetadata.queue, this.configs.exchange.name, this.configs.queue.bindingPattern, this.configs.queue.arguments);
+    await channel.prefetch(this.configs.prefetch);
+
+    return channel;
+  }
+
+  public async init(connection: RabbitMqConnection, customSetupFunction?: (connection: Connection) => Promise<Channel>): Promise<void> {
+    this.connection = connection;
+    const amqpConnection = this.connection.getAmqpConnection();
+    if (customSetupFunction)
+      this.channel = await customSetupFunction(amqpConnection);
+    else
+      this.channel = await this.defaultSetup(amqpConnection);
 
     await this.channel.consume(
       this.configs.queue.name,
       (message: Message): void => {
         if (message === null)
-          return void this.subject.error(new RabbitMqChannelCancelledError('Channel was cancelled by the server'));
+          return void this.subject.error(new RabbitMqChannelCancelledError('The channel was cancelled by the server'));
         else
           this.subject.next(message);
       },
-      { noAck: this.configs.noAckNeeded },
+      { noAck: this.configs.autoAck },
     );
 
-    amqpConnection.on('error', (err) => {
-      if (this.configs.autoReconnect !== false)
-        this.reconnect().toPromise().then(() => console.log('Successfully reconnected to server'));
-      this.subject.error(new RabbitMqConnectionError(err.message))
-    });
-    amqpConnection.on('close', () => this.subject.error(new RabbitMqConnectionClosedError('AMQP server closed connection')));
+    amqpConnection.on('error', (err) => this.subject.error(new RabbitMqConnectionError(err.message)));
+    amqpConnection.on('close', () => this.subject.error(new RabbitMqConnectionClosedError('The connection was closed by the server')));
     this.channel.on('error', (err) => this.subject.error(new RabbitMqChannelError(err.message)));
-    this.channel.on('close', () => this.subject.error(new RabbitMqChannelClosedError('AMQP server closed channel')));
+    this.channel.on('close', () => this.subject.error(new RabbitMqChannelClosedError('The channel was closed by the server')));
   }
 
   public reconnect() {
     const connectionFactory = new ConnectionFactory();
     connectionFactory.setUri(this.connection.getUri());
-    return new Observable((subscriber) => {
+    return new Observable<void>((subscriber) => {
       connectionFactory
         .newConnection()
         .then((connection) => this.init(connection))
         .then(() => subscriber.complete())
-        .catch((err) => {
-          if (err instanceof RabbitMqConnectionError)
-            console.error(`Error while reconnecting to server: ${err.code}`);
-          else
-            console.error(`Error while reconnecting to server: ${err.message}`);
-        });
+        .catch(() => {}); // to avoid loud unhandled promise rejections
     }).pipe(
       timeout(this.configs.reconnectTimeoutMillis || DEFAULT_RECONNECT_TIMEOUT_MILLIS),
       retry(this.configs.reconnectTimeoutMillis || DEFAULT_RECONNECT_ATTEMPTS),
@@ -100,7 +138,7 @@ export class Consumer implements RabbitMqPeer {
     await this.channel.close();
   }
 
-  public getActiveChannel(): any {
+  public getActiveChannel(): Channel {
     return this.channel;
   }
 
@@ -110,6 +148,10 @@ export class Consumer implements RabbitMqPeer {
 
   public startConsuming(): ReplaySubject<Message> {
     return this.subject;
+  }
+
+  public getActiveConfigs(): ConsumerConfigs {
+    return this.configs;
   }
 
   public commitMessage(amqpMessage: Message) {

@@ -1,15 +1,14 @@
 import { RabbitMqPublisherSetupError } from '../errors/rabbitmq-publisher-setup.error';
 import { PublisherConfigs } from '../interfaces/publisher-configs';
 import { Publisher } from '../models/publisher';
+import { RabbitMqConnection } from '../models/rabbitmq-connection';
 
 export class PublisherFactory {
-  private configs: PublisherConfigs;
-  private readonly connection: any;
 
-  constructor(connection: any, configs?: PublisherConfigs) {
-    this.connection = connection;
-    this.configs = configs;
-  }
+  constructor(
+    private readonly connection: RabbitMqConnection,
+    private configs?: PublisherConfigs,
+  ) {}
 
   public setConfigs(configs: PublisherConfigs) {
     this.configs = configs;

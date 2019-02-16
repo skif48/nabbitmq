@@ -1,7 +1,7 @@
 export interface ConsumerConfigs {
   queue: {
     name: string;
-    topic?: string;
+    bindingPattern?: string;
     durable?: boolean;
     arguments?: { [x: string]: any };
   };
@@ -12,15 +12,14 @@ export interface ConsumerConfigs {
     arguments?: { [x: string]: any };
   };
   prefetch?: number;
-  noAckNeeded?: boolean;
+  autoAck?: boolean;
   defaultEncoding?: string;
   reconnectTimeoutMillis?: number;
   reconnectAttempts?: number;
-  autoReconnect?: boolean;
   noDeadLetterQueue?: boolean;
   deadLetterQueue?: {
-    name: string;
-    exchangeName: string;
-    exchangeType: string;
+    name?: string;
+    exchangeName?: string;
+    exchangeType?: string;
   };
 }

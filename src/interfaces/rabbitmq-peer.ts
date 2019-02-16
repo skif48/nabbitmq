@@ -1,9 +1,10 @@
+import { Channel, Connection } from 'amqplib';
 import { Observable } from 'rxjs/internal/Observable';
 
 export interface RabbitMqPeer {
   init(...args): void | Promise<void>;
-  reconnect(): Observable<any>;
+  reconnect(): Observable<void>;
   closeChannel(): void;
-  getActiveChannel(): any;
-  getActiveConnection(): any;
+  getActiveChannel(): Channel;
+  getActiveConnection(): Connection;
 }

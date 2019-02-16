@@ -1,7 +1,7 @@
 import { RabbitMqConsumerSetupError } from "../errors/rabbitmq-consumer-setup.error";
 import { ConsumerConfigs } from "../interfaces/consumer-configs";
 import { Consumer } from "../models/consumer";
-import { RabbitMqConnection } from '../models/rabbtimq-connection';
+import { RabbitMqConnection } from '../models/rabbitmq-connection';
 
 export class ConsumerFactory {
   constructor(

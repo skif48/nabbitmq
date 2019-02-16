@@ -1,6 +1,6 @@
 import * as amqp from 'amqplib';
 import { RabbitMqConnectionError } from '../errors/rabbitmq-connection.error';
-import { RabbitMqConnection } from '../models/rabbtimq-connection';
+import { RabbitMqConnection } from '../models/rabbitmq-connection';
 
 export class ConnectionFactory {
   private uri: string;

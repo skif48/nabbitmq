@@ -1,3 +1,4 @@
+import { Channel, ConfirmChannel, Connection } from 'amqplib';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Observable } from 'rxjs/internal/Observable';
 import { retry, timeout } from 'rxjs/operators';
@@ -5,73 +6,95 @@ import { RabbitMqChannelClosedError } from '../errors/rabbitmq-channel-closed.er
 import { RabbitMqChannelError } from '../errors/rabbitmq-channel.error';
 import { RabbitMqConnectionClosedError } from '../errors/rabbitmq-connection-closed.error';
 import { RabbitMqConnectionError } from '../errors/rabbitmq-connection.error';
+import { RabbitMqPublisherConfirmationError } from '../errors/rabbitmq-publisher-confirmation.error';
 import { ConnectionFactory } from '../factories/connection-factory';
 import { PublisherConfigs } from '../interfaces/publisher-configs';
 import { RabbitMqPeer } from '../interfaces/rabbitmq-peer';
-import { RabbitMqConnection } from './rabbtimq-connection';
+import { RabbitMqConnection } from './rabbitmq-connection';
 
 const DEFAULT_RECONNECT_TIMEOUT_MILLIS = 1000;
 const DEFAULT_RECONNECT_ATTEMPTS = -1; // infinity
 
 export class Publisher implements RabbitMqPeer {
   private connection: RabbitMqConnection;
-  private channel: any;
+  private channel: Channel | ConfirmChannel;
   private readonly subject: BehaviorSubject<string>;
+  private readonly rawConfigs: PublisherConfigs;
+  private readonly configs: PublisherConfigs;
 
-  constructor(
-    private readonly configs: PublisherConfigs,
-  ) {
+  constructor(configs: PublisherConfigs) {
     this.subject = new BehaviorSubject<string>('Publisher initialized');
+    this.rawConfigs = configs;
+    this.configs = this.fillEmptyConfigsWithDefaults(this.rawConfigs);
   }
 
-  public async init(connection: RabbitMqConnection) {
-    this.connection = connection;
-    const amqpConnection = this.connection.getAmqpConnection();
+  private fillEmptyConfigsWithDefaults(rawConfigs?: PublisherConfigs): PublisherConfigs {
+    let filledConfigs = Object.assign({}, rawConfigs);
+    if (!filledConfigs.exchange || !filledConfigs.exchange.name)
+      throw new Error('Name of the exchange has to be provided');
+
+    filledConfigs.exchange.durable = typeof filledConfigs.exchange.durable === 'undefined' ? true : filledConfigs.exchange.durable;
+    filledConfigs.exchange.arguments = filledConfigs.exchange.arguments || {};
+    filledConfigs.exchange.type = filledConfigs.exchange.type || 'direct';
+
+    filledConfigs.publisherConfirms = typeof filledConfigs.publisherConfirms === 'undefined' ? true : filledConfigs.publisherConfirms;
+    filledConfigs.reconnectAttempts = filledConfigs.reconnectAttempts || DEFAULT_RECONNECT_ATTEMPTS;
+    filledConfigs.reconnectTimeoutMillis = filledConfigs.reconnectTimeoutMillis || DEFAULT_RECONNECT_TIMEOUT_MILLIS;
+
+    return filledConfigs;
+  }
+
+  private async defaultSetup(connection: Connection): Promise<Channel|ConfirmChannel> {
     const exchangeOptions: { [x: string]: any } = {};
     exchangeOptions.durable = this.configs.exchange.durable;
     exchangeOptions.arguments = this.configs.exchange.arguments || {};
-    this.channel = await amqpConnection.createConfirmChannel();
-    await this.channel.assertExchange(this.configs.exchange.name, this.configs.exchange.type || 'topic', exchangeOptions);
+    const channel = this.configs.publisherConfirms ? await connection.createConfirmChannel() : await connection.createChannel();
+    await channel.assertExchange(this.configs.exchange.name, this.configs.exchange.type, exchangeOptions);
+
+    return channel;
+  }
+
+  public async init(connection: RabbitMqConnection, customSetupFunction?: (connection: Connection) => Promise<Channel>) {
+    this.connection = connection;
+    const amqpConnection = this.connection.getAmqpConnection();
+
+    if (customSetupFunction)
+      this.channel = await customSetupFunction(amqpConnection);
+    else
+      this.channel = await this.defaultSetup(amqpConnection);
 
     amqpConnection.on('error', (err) => {
-      if (this.configs.autoReconnect !== false)
-        this.reconnect().toPromise().then(() => console.log('Successfully reconnected to server'));
-      this.subject.error(new RabbitMqConnectionError(err.message))
+      this.subject.error(new RabbitMqConnectionError(err.message));
     });
     amqpConnection.on('close', () => this.subject.error(new RabbitMqConnectionClosedError('AMQP server closed connection')));
     this.channel.on('error', (err) => this.subject.error(new RabbitMqChannelError(err.message)));
     this.channel.on('close', () => this.subject.error(new RabbitMqChannelClosedError('AMQP server closed channel')));
   }
 
-  public reconnect(): Observable<any> {
+  public reconnect(): Observable<void> {
     const connectionFactory = new ConnectionFactory();
     connectionFactory.setUri(this.connection.getUri());
-    return new Observable((subscriber) => {
+    return new Observable<void>((subscriber) => {
       connectionFactory
         .newConnection()
         .then((connection) => this.init(connection))
         .then(() => subscriber.complete())
-        .catch((err) => {
-          if (err instanceof RabbitMqConnectionError)
-            console.error(`Error while reconnecting to server: ${err.code}`);
-          else
-            console.error(`Error while reconnecting to server: ${err.message}`);
-        });
+        .catch(() => {}); // to avoid loud unhandled promise rejections
     }).pipe(
-      timeout(this.configs.reconnectTimeoutMillis || DEFAULT_RECONNECT_TIMEOUT_MILLIS),
-      retry(this.configs.reconnectAttempts || DEFAULT_RECONNECT_ATTEMPTS),
+      timeout(this.configs.reconnectTimeoutMillis),
+      retry(this.configs.reconnectAttempts),
     );
   }
 
-  public closeChannel(): void {
-    this.channel.close();
+  public async closeChannel(): Promise<void> {
+    await this.channel.close();
   }
 
-  public getActiveChannel(): any {
+  public getActiveChannel(): Channel {
     return this.channel;
   }
 
-  public getActiveConnection(): any {
+  public getActiveConnection(): Connection {
     return this.connection.getAmqpConnection();
   }
 
@@ -79,7 +102,19 @@ export class Publisher implements RabbitMqPeer {
     return this.subject;
   }
 
-  public publishMessage(message: Buffer, routingKey?: string, options?: any) {
-    this.channel.publish(this.configs.exchange.name, routingKey || '', message, options);
+  public async publishMessage(message: Buffer, routingKey?: string, options?: any): Promise<void> {
+    if (this.configs.publisherConfirms)
+      return new Promise((resolve, reject) => {
+        this.channel.publish(this.configs.exchange.name, routingKey || '', message, options || {}, (err) => {
+          if (err)
+            return reject(new RabbitMqPublisherConfirmationError(err.message));
+
+          this.subject.next(`A message was sent with routing key "${routingKey}"`);
+          resolve();
+        });
+      });
+
+    this.channel.publish(this.configs.exchange.name, routingKey || '', message, options || {});
+    this.subject.next(`A message was sent with routing key "${routingKey}"`);
   }
 }
