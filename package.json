@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "example": "nodemon --config ./examples/nodemon.config.json",
+    "example_with_custom": "nodemon --config ./examples/nodemon.config.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json"

@@ -5,8 +5,7 @@ export interface PublisherConfigs {
     durable?: boolean;
     arguments?: { [x: string]: any };
   };
-  defaultEncoding?: string;
+  publisherConfirms?: boolean;
   reconnectTimeoutMillis?: number;
   reconnectAttempts?: number;
-  autoReconnect?: boolean;
 }
