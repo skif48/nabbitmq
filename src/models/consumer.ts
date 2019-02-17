@@ -8,6 +8,7 @@ import { RabbitMqConnectionClosedError } from '../errors/rabbitmq-connection-clo
 import { RabbitMqConnectionError } from '../errors/rabbitmq-connection.error';
 import { ConnectionFactory } from '../factories/connection-factory';
 import { ConsumerConfigs } from '../interfaces/consumer-configs';
+import { RabbitMqSetupFunction } from '../interfaces/rabbit-mq-setup-function';
 import { RabbitMqPeer } from '../interfaces/rabbitmq-peer';
 import { RabbitMqConnection } from './rabbitmq-connection';
 
@@ -16,21 +17,14 @@ const DEFAULT_RECONNECT_ATTEMPTS = -1; // infinity
 const DEFAULT_PREFETCH = 100;
 
 export class Consumer implements RabbitMqPeer {
-  private readonly rawConfigs: ConsumerConfigs;
-  private readonly configs: ConsumerConfigs;
   private subject: ReplaySubject<Message>;
+  private rawConfigs: ConsumerConfigs;
+  private configs: ConsumerConfigs;
   private channel: Channel;
   private connection: RabbitMqConnection;
+  private customSetupFunction: RabbitMqSetupFunction;
 
-  constructor(configs: ConsumerConfigs) {
-    this.rawConfigs = configs;
-    this.configs = this.fillEmptyConfigsWithDefaults(this.rawConfigs);
-    this.initStream();
-  }
-
-  private initStream() {
-    this.subject = new ReplaySubject<Message>();
-  }
+  constructor() {}
 
   private fillEmptyConfigsWithDefaults(rawConfigs?: ConsumerConfigs): ConsumerConfigs {
     let filledConfigs = Object.assign({}, rawConfigs);
@@ -94,13 +88,28 @@ export class Consumer implements RabbitMqPeer {
     return channel;
   }
 
-  public async init(connection: RabbitMqConnection, customSetupFunction?: (connection: Connection) => Promise<Channel>): Promise<void> {
+  public setConfigs(configs: ConsumerConfigs) {
+    this.rawConfigs = configs;
+    this.configs = this.fillEmptyConfigsWithDefaults(this.rawConfigs);
+  }
+
+  public setCustomSetupFunction(setupFunction: RabbitMqSetupFunction) {
+    this.customSetupFunction = setupFunction;
+    this.rawConfigs = null;
+    this.configs = null;
+  }
+
+  public async init(connection: RabbitMqConnection): Promise<void> {
     this.connection = connection;
     const amqpConnection = this.connection.getAmqpConnection();
-    if (customSetupFunction)
-      this.channel = await customSetupFunction(amqpConnection);
-    else
+    if (this.customSetupFunction) {
+      const {channel, prefetch} = await this.customSetupFunction(amqpConnection);
+      this.channel = channel;
+      this.subject = new ReplaySubject<Message>(prefetch || DEFAULT_PREFETCH);
+    } else {
       this.channel = await this.defaultSetup(amqpConnection);
+      this.subject = new ReplaySubject<Message>(this.configs.prefetch);
+    }
 
     await this.channel.consume(
       this.configs.queue.name,

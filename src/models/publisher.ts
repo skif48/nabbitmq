@@ -9,6 +9,7 @@ import { RabbitMqConnectionError } from '../errors/rabbitmq-connection.error';
 import { RabbitMqPublisherConfirmationError } from '../errors/rabbitmq-publisher-confirmation.error';
 import { ConnectionFactory } from '../factories/connection-factory';
 import { PublisherConfigs } from '../interfaces/publisher-configs';
+import { RabbitMqSetupFunction } from '../interfaces/rabbit-mq-setup-function';
 import { RabbitMqPeer } from '../interfaces/rabbitmq-peer';
 import { RabbitMqConnection } from './rabbitmq-connection';
 
@@ -18,15 +19,12 @@ const DEFAULT_RECONNECT_ATTEMPTS = -1; // infinity
 export class Publisher implements RabbitMqPeer {
   private connection: RabbitMqConnection;
   private channel: Channel | ConfirmChannel;
-  private readonly subject: BehaviorSubject<string>;
-  private readonly rawConfigs: PublisherConfigs;
-  private readonly configs: PublisherConfigs;
+  private subject: BehaviorSubject<string>;
+  private rawConfigs: PublisherConfigs;
+  private configs: PublisherConfigs;
+  private customSetupFunction: RabbitMqSetupFunction;
 
-  constructor(configs: PublisherConfigs) {
-    this.subject = new BehaviorSubject<string>('Publisher initialized');
-    this.rawConfigs = configs;
-    this.configs = this.fillEmptyConfigsWithDefaults(this.rawConfigs);
-  }
+  constructor() {}
 
   private fillEmptyConfigsWithDefaults(rawConfigs?: PublisherConfigs): PublisherConfigs {
     let filledConfigs = Object.assign({}, rawConfigs);
@@ -54,18 +52,30 @@ export class Publisher implements RabbitMqPeer {
     return channel;
   }
 
-  public async init(connection: RabbitMqConnection, customSetupFunction?: (connection: Connection) => Promise<Channel>) {
+  public setConfigs(configs: PublisherConfigs) {
+    this.rawConfigs = configs;
+    this.configs = this.fillEmptyConfigsWithDefaults(this.rawConfigs);
+  }
+
+  public setCustomSetupFunction(setupFunction: RabbitMqSetupFunction) {
+    this.customSetupFunction = setupFunction;
+    this.rawConfigs = null;
+    this.configs = null;
+  }
+
+  public async init(connection: RabbitMqConnection): Promise<void> {
     this.connection = connection;
     const amqpConnection = this.connection.getAmqpConnection();
 
-    if (customSetupFunction)
-      this.channel = await customSetupFunction(amqpConnection);
-    else
+    if (this.customSetupFunction) {
+      const {channel} = await this.customSetupFunction(amqpConnection);
+      this.channel = channel;
+    } else
       this.channel = await this.defaultSetup(amqpConnection);
 
-    amqpConnection.on('error', (err) => {
-      this.subject.error(new RabbitMqConnectionError(err.message));
-    });
+    this.subject = new BehaviorSubject<string>('Publisher initialized');
+
+    amqpConnection.on('error', (err) => this.subject.error(new RabbitMqConnectionError(err.message)));
     amqpConnection.on('close', () => this.subject.error(new RabbitMqConnectionClosedError('AMQP server closed connection')));
     this.channel.on('error', (err) => this.subject.error(new RabbitMqChannelError(err.message)));
     this.channel.on('close', () => this.subject.error(new RabbitMqChannelClosedError('AMQP server closed channel')));

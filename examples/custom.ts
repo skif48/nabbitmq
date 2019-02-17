@@ -1,21 +1,23 @@
-import { ConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqError, RabbitMqPublisherConfirmationError } from '../src';
+import { ConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqPublisherConfirmationError } from '../src';
 
 async function main() {
   const connectionFactory = new ConnectionFactory();
   connectionFactory.setUri('amqp://localhost:5672');
-  const connection = await connectionFactory.newConnection();
-  const consumerFactory = new ConsumerFactory(connection);
-  consumerFactory.setConfigs({
-    queue: {
-      name: 'super_queue',
-      bindingPattern: 'route.#',
-    },
-    exchange: {
-      type: 'topic',
-    },
-    noDeadLetterQueue: true,
-    autoAck: false,
+  const rabbitMqConnection = await connectionFactory.newConnection();
+  const consumerFactory = new ConsumerFactory(rabbitMqConnection);
+  consumerFactory.setCustomSetupFunction(async (connection) => {
+    const channel = await connection.createChannel();
+    await channel.assertExchange('exchange', 'topic', {});
+    const queueMetadata = await channel.assertQueue('queue', {
+      durable: true,
+    });
+
+    await channel.bindQueue(queueMetadata.queue, 'exchange', 'route.#', this.configs.queue.arguments);
+    await channel.prefetch(50);
+
+    return {channel, prefetch: 50};
   });
+
   const consumer = await consumerFactory.newConsumer();
 
   consumer.startConsuming().subscribe({
@@ -37,12 +39,15 @@ async function main() {
 
   const anotherConnection = await connectionFactory.newConnection();
   const publisherFactory = new PublisherFactory(anotherConnection);
-  publisherFactory.setConfigs({
-    exchange: {
-      name: consumer.getActiveConfigs().exchange.name,
-      type: 'topic',
-    },
-    publisherConfirms: true,
+  publisherFactory.setCustomSetupFunction(async (connection) => {
+    const channel = await connection.createConfirmChannel();
+    await channel.assertExchange('exchange', 'topic', {});
+    const queueMetadata = await channel.assertQueue('queue', {
+      durable: true,
+    });
+
+    await channel.bindQueue(queueMetadata.queue, 'exchange', 'route.#', this.configs.queue.arguments);
+    return {channel};
   });
   const publisher = await publisherFactory.newPublisher();
 
