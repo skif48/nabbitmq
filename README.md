@@ -132,13 +132,59 @@ const configs = {
 };
 ``` 
 ### Usage
-**Topic exchange type**
+**Setting up topic exchange type**
+```typescript
+import { ConsumerFactory, PublisherFactory, RabbitMqConnectionFactory } from '../src';
+
+async function main() {
+  const connectionFactory = new RabbitMqConnectionFactory();
+  connectionFactory.setUri('amqp://localhost:5672');
+  const connection = await connectionFactory.newConnection();
+  const consumerFactory = new ConsumerFactory(connection);
+  consumerFactory.setConfigs({
+    queue: {
+      name: 'queue',
+      bindingPattern: 'route.#',
+    },
+    exchange: {
+      name: 'exchange',
+      type: 'topic',
+      durable: false,
+    },
+    prefetch: 50,
+  });
+  const consumer = await consumerFactory.newConsumer();
+
+  console.log(consumer.getActiveConfigs());
+  consumer.startConsuming().subscribe({
+    next: (msg) => {
+      console.log(msg);
+      consumer.commitMessage(msg);
+    },
+    error: console.error,
+  });
+
+  const anotherConnection = await connectionFactory.newConnection();
+  const publisherFactory = new PublisherFactory(anotherConnection);
+  publisherFactory.setConfigs({
+    exchange: {
+      name: 'exchange',
+      type: 'topic',
+    },
+    publisherConfirms: false,
+  });
+  const publisher = await publisherFactory.newPublisher();
+  console.log(publisher.getActiveConfigs());
+  publisher.actionsStream().subscribe({next: console.log, error: console.error});
+  setInterval(() => publisher.publishMessage(Buffer.from('hello hello!'), `route.${Math.ceil(Math.random() * 10)}`), 1000);
+}
+
+main();
+
+```
 
 **With custom setup function**
-
-At this point of time, standard consumer configs are supposed to build a one-to-one relationships between exchanges and queues. 
-Obviously, it might not be suitable for use cases, when we need to leverage, for example, routing based bindings between one exchange and many queues. 
-Therefore custom setup functions can be used to build consumers and publishers. Here is a snippet that makes of use such approach:
+Let's see how we can achieve the same as in the example above, but instead of config objects we're going to supply a custom setup function
 
 ```typescript
 import { RabbitMqConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqPublisherConfirmationError } from '../src';
@@ -158,7 +204,7 @@ async function main() {
     await channel.bindQueue(queueMetadata.queue, 'exchange', 'route.#', this.configs.queue.arguments);
     await channel.prefetch(50);
 
-    return {channel, prefetch: 50}; // returning an object with channel and prefetch count. Prefetch is optional
+    return {channel, prefetch: 50, autoAck: false}; // returning an object with channel, prefetch count and automatic acknowledgments flag. Prefetch is optional, auto ack flag too
   });
 
   const consumer = await consumerFactory.newConsumer();

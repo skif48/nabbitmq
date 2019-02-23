@@ -117,8 +117,14 @@ export class Consumer implements RabbitMqPeer {
   public async init(connection: RabbitMqConnection): Promise<void> {
     this.connection = connection;
     const amqpConnection = this.connection.getAmqpConnection();
+    let channel: Channel;
+    let prefetch: number;
+    let autoAck: boolean;
     if (this.customSetupFunction) {
-      const {channel, prefetch} = await this.customSetupFunction(amqpConnection);
+      const functionResult = await this.customSetupFunction(amqpConnection);
+      channel = functionResult.channel;
+      prefetch = functionResult.prefetch;
+      autoAck = functionResult.autoAck;
       this.channel = channel;
       this.subject = new ReplaySubject<Message>(prefetch || DEFAULT_PREFETCH);
     } else {
@@ -134,7 +140,7 @@ export class Consumer implements RabbitMqPeer {
         else
           this.subject.next(message);
       },
-      { noAck: this.configs.autoAck },
+      { noAck: autoAck },
     );
 
     amqpConnection.on('error', (err) => this.subject.error(new RabbitMqConnectionError(err.message)));
@@ -206,7 +212,7 @@ export class Consumer implements RabbitMqPeer {
 
   /**
    * Rejects a message (nack command of amqp)
-   * @param message amqpMessage amqplib's message object
+   * @param message amqplib's message object
    * @param allUpToCurrent set true if there is a need to reject all messages up to current, default is false
    * @param requeue set true if there is a need to put this message back in to the queue, default is false
    */

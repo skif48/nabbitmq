@@ -15,7 +15,7 @@ async function main() {
     await channel.bindQueue(queueMetadata.queue, 'exchange', 'route.#', this.configs.queue.arguments);
     await channel.prefetch(50);
 
-    return {channel, prefetch: 50};
+    return {channel, prefetch: 50, autoAck: false};
   });
 
   const consumer = await consumerFactory.newConsumer();
