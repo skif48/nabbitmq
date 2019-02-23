@@ -14,7 +14,8 @@
 ```bash
 npm install --save nabbitmq
 ```
-
+### API Docs
+Documentation can be found [here](https://skif48.github.io/nabbitmq/)
 ### Description
 
 NabbitMQ is a library that makes it easy for Node.js developers to interact with RabbitMQ. It's built on top of famous [amqplib](https://www.npmjs.com/package/amqplib) package and it leverages RxJS streams.
