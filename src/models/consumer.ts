@@ -6,7 +6,7 @@ import { RabbitMqChannelClosedError } from '../errors/rabbitmq-channel-closed.er
 import { RabbitMqChannelError } from '../errors/rabbitmq-channel.error';
 import { RabbitMqConnectionClosedError } from '../errors/rabbitmq-connection-closed.error';
 import { RabbitMqConnectionError } from '../errors/rabbitmq-connection.error';
-import { ConnectionFactory } from '../factories/connection-factory';
+import { RabbitMqConnectionFactory } from '../factories/rabbit-mq-connection-factory';
 import { ConsumerConfigs } from '../interfaces/consumer-configs';
 import { RabbitMqSetupFunction } from '../interfaces/rabbit-mq-setup-function';
 import { RabbitMqPeer } from '../interfaces/rabbitmq-peer';
@@ -16,6 +16,9 @@ const DEFAULT_RECONNECT_TIMEOUT_MILLIS = 1000;
 const DEFAULT_RECONNECT_ATTEMPTS = -1; // infinity
 const DEFAULT_PREFETCH = 100;
 
+/**
+ * Used for setting up or ensuring required RabbitMQ internal structure and consuming messages.
+ */
 export class Consumer implements RabbitMqPeer {
   private subject: ReplaySubject<Message>;
   private rawConfigs: ConsumerConfigs;
@@ -88,17 +91,29 @@ export class Consumer implements RabbitMqPeer {
     return channel;
   }
 
+  /**
+   * Sets consumer's configs
+   * @param configs consumer's configs
+   */
   public setConfigs(configs: ConsumerConfigs) {
     this.rawConfigs = configs;
     this.configs = this.fillEmptyConfigsWithDefaults(this.rawConfigs);
   }
 
+  /**
+   * Sets custom setup function
+   * @param setupFunction custom setup function
+   */
   public setCustomSetupFunction(setupFunction: RabbitMqSetupFunction) {
     this.customSetupFunction = setupFunction;
     this.rawConfigs = null;
     this.configs = null;
   }
 
+  /**
+   * Initializes the consumer, sets up internal RabbitMQ structure according to configs or runs custom setup function, if provided
+   * @param connection connection
+   */
   public async init(connection: RabbitMqConnection): Promise<void> {
     this.connection = connection;
     const amqpConnection = this.connection.getAmqpConnection();
@@ -128,8 +143,11 @@ export class Consumer implements RabbitMqPeer {
     this.channel.on('close', () => this.subject.error(new RabbitMqChannelClosedError('The channel was closed by the server')));
   }
 
+  /**
+   * Constantly attempts to reconnect to RabbitMQ either default or given amount of times with some default or given timeout
+   */
   public reconnect() {
-    const connectionFactory = new ConnectionFactory();
+    const connectionFactory = new RabbitMqConnectionFactory();
     connectionFactory.setUri(this.connection.getUri());
     return new Observable<void>((subscriber) => {
       connectionFactory
@@ -143,30 +161,55 @@ export class Consumer implements RabbitMqPeer {
     );
   }
 
+  /**
+   * Closes the active channel, this will throw a RabbitMqChannelClosedError in the consumer's stream
+   */
   public async closeChannel(): Promise<void> {
     await this.channel.close();
   }
 
+  /**
+   * Returns a channel object of amqplib
+   */
   public getActiveChannel(): Channel {
     return this.channel;
   }
 
+  /**
+   * Return a connection object of amqplib
+   */
   public getActiveConnection(): Connection {
     return this.connection.getAmqpConnection();
   }
 
+  /**
+   * Returns an instance of ReplaySubject<Message>, to which it is possible to subscribe to listen to messages and any other RabbitMQ activity
+   */
   public startConsuming(): ReplaySubject<Message> {
     return this.subject;
   }
 
+  /**
+   * Returns current consumer's configs. Returns null if consumer was setup with custom setup function
+   */
   public getActiveConfigs(): ConsumerConfigs {
     return this.configs;
   }
 
+  /**
+   * Commits a message (ack command of amqp)
+   * @param amqpMessage amqplib's message object
+   */
   public commitMessage(amqpMessage: Message) {
     this.channel.ack(amqpMessage);
   }
 
+  /**
+   * Rejects a message (nack command of amqp)
+   * @param message amqpMessage amqplib's message object
+   * @param allUpToCurrent set true if there is a need to reject all messages up to current, default is false
+   * @param requeue set true if there is a need to put this message back in to the queue, default is false
+   */
   public rejectMessage(message: Message, allUpToCurrent = false, requeue = false) {
     this.channel.nack(message, allUpToCurrent, requeue);
   }

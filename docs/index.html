@@ -1,0 +1,379 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>nabbitmq</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">nabbitmq</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> nabbitmq</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<p align="center">
+					<img src="https://i.imgur.com/zoFHpgH.png" height="160" alt="NabbitMQ Logo"/></a>
+					<h1>NabbitMQ</h1>
+				</p>
+				<p><strong>Node.js library for interacting with RabbitMQ based on RxJS streams</strong></p>
+				<p><a href="https://badge.fury.io/js/nabbitmq"><img src="https://badge.fury.io/js/nabbitmq.svg" alt="npm version"></a></p>
+				<p><strong>Any suggestions, any criticism and any help from the open source community is warmly welcomed!</strong></p>
+				<h3 id="installation">Installation</h3>
+				<pre><code class="language-bash">npm install --save nabbitmq</code></pre>
+				<h3 id="description">Description</h3>
+				<p>NabbitMQ is a library that makes it easy for Node.js developers to interact with RabbitMQ. It&#39;s built on top of famous <a href="https://www.npmjs.com/package/amqplib">amqplib</a> package and it leverages RxJS streams.</p>
+				<p>Message queues naturally are streams of events, therefore using RxJS with them is an efficient way for developers to solve complex problems in a very elegant fashion.  </p>
+				<p>There are a lot of use cases, when we don&#39;t need to setup non standard exchanges and non trivial bindings to queues. In fact, most of the time what we actually need is just <strong>a simple queue</strong>, just <strong>out of the box</strong>. And NabbitMQ is here to help you with that! All you need is to provide custom name for the queue and you&#39;re ready to go, everything else is handled for you! </p>
+				<p>However, NabbitMQ allows you to use amqplib&#39;s promise-based api directly, so that <strong>you can build a more complex solution</strong> for your specific needs and still make use of RxJS streams.</p>
+				<h3 id="principles-and-reasons">Principles and reasons</h3>
+				<p>Obviously, one of the main reasons for this library to even exist is <strong>to have the threshold of entry to RabbitMQ world a bit lower</strong>, than it is now, but at the same time to allow us to make use of any piece of API that RabbitMQ provides us with.</p>
+				<p>The other reason is <strong>seamless error handling</strong> and helping developers to easily build fault tolerant solutions. For example, NabbitMQ will provide you with an <strong>automatically set up dead letter queue that listens to your main queue</strong>, unless you just don&#39;t need to have.</p>
+				<p>NabbitMQ has <strong>its own set of error classes</strong>, therefore it makes it easy for developers to debug and build solutions, that will survive even in the most &quot;cornery&quot; corner cases.</p>
+				<p>In the end, the main principle and goal is to have a solid and reliable solution out of the box, while working with RabbitMQ.</p>
+				<h3 id="quick-start">Quick start</h3>
+				<p>This snippet demonstrates how you can easily spin up a solid RabbitMQ setup and quickly start to consume a stream of events from it. Under the hood, NabbitMQ creates all necessary bindings, exchanges, dead letter queues and provides you with <strong>reconnect logic</strong>.</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { ConnectionFactory, ConsumerFactory, PublisherFactory } <span class="hljs-keyword">from</span> <span class="hljs-string">'nabbitmq'</span>;
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> connectionFactory = <span class="hljs-keyword">new</span> ConnectionFactory();
+  connectionFactory.setUri(<span class="hljs-string">'amqp://localhost:5672'</span>);
+  <span class="hljs-keyword">const</span> connection = <span class="hljs-keyword">await</span> connectionFactory.newConnection();
+  <span class="hljs-keyword">const</span> consumerFactory = <span class="hljs-keyword">new</span> ConsumerFactory(connection);
+  consumerFactory.setConfigs({queue: {name: <span class="hljs-string">'super_queue'</span>}});
+  <span class="hljs-keyword">const</span> consumer = <span class="hljs-keyword">await</span> consumerFactory.newConsumer();
+
+  consumer.startConsuming().subscribe({next: <span class="hljs-built_in">console</span>.log, error: <span class="hljs-built_in">console</span>.error});
+
+  <span class="hljs-keyword">const</span> anotherConnection = <span class="hljs-keyword">await</span> connectionFactory.newConnection();
+  <span class="hljs-keyword">const</span> publisherFactory = <span class="hljs-keyword">new</span> PublisherFactory(anotherConnection);
+  publisherFactory.setConfigs({exchange: {name: consumer.getActiveConfigs().exchange.name}});
+  <span class="hljs-keyword">const</span> publisher = <span class="hljs-keyword">await</span> publisherFactory.newPublisher();
+  setInterval(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> publisher.publishMessage(Buffer.from(<span class="hljs-string">'hello hello!'</span>), <span class="hljs-string">`<span class="hljs-subst">${consumer.getActiveConfigs().queue.name}</span>_rk`</span>), <span class="hljs-number">1000</span>);
+}
+
+main();
+</code></pre>
+				<h3 id="overview">Overview</h3>
+				<p>NabbitMQ provides you with two main abstractions: <strong>Publisher</strong> and <strong>Consumer</strong>. Each is represented by a class, that implements <strong>RabbitMqPeer</strong> interface.
+					They are supposed to be instantiated with PublisherFactory and ConsumerFactory classes.
+					However, there is a third abstraction called RabbitMqConnection.
+					This is a class, that holds an active connection data to the used RabbitMQ server.
+					It is injected into publishers and consumers via their factories.
+					Configs to setup RabbitMQ internal structure of exchanges, queues and bindings, are provided to factories in form of plain JavaScript/TypeScript objects.
+					There are interfaces for these objects, called <strong>ConsumerConfigs</strong> and <strong>PublisherConfigs</strong>.
+					Most of the values for these objects are optional, the consumers and publishers themselves fill them up with some standard values. For example, if your provide a queue name like <em>my_queue</em>, but don&#39;t provide an exchange name, the exchange will be called <em>exchange_my_queue</em> - you can rely on that.
+					Also, if <strong>dead letter queue</strong> has to be set up (which is optional), but no name for it provided, consumer will also result with default name like <em>my_queue_dlq</em>.
+				Dead letter exchange will have the following form: <em>exchange_my_queue_dlq</em>.</p>
+				<p>However, it is obvious that you might need to have a rare and not so generic RabbitMQ structure with more than one queue and more than one exchange.
+					Therefore there is an option for you not to provide these configs, but to provide a so called <strong>custom setup function</strong>.
+					This function accepts a connection object from underlying amqplib package.
+				Inside of this function you can do whatever you need, but it should return a <em>promise</em> that resolves with an object that contains amqplib channel instance and optional consumer&#39;s prefetch count, if you use this function to set up a consumer (not mandatory though, a default prefetch value will be set if not provided).</p>
+				<h3 id="basics">Basics</h3>
+				<p><strong>Consumer configs</strong></p>
+				<p>The only required field to setup a consumer is name of the queue you want to use.
+					Every other field is optional and will be filled by consumer itself.
+				Here is an example of how consumer configs object will look like, when there was only queue name <em>my_queue</em> provided:</p>
+				<pre><code class="language-javascript"><span class="hljs-keyword">const</span> configs = {
+  <span class="hljs-attr">queue</span>: { 
+    <span class="hljs-attr">name</span>: <span class="hljs-string">'my_queue'</span>,
+    <span class="hljs-attr">durable</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// queue persistence is enabled by default</span>
+    <span class="hljs-built_in">arguments</span>: {}, <span class="hljs-comment">// empty arguments for queue to assert by default</span>
+    bindingPattern: <span class="hljs-string">'my_queue_rk'</span>, <span class="hljs-comment">// routing key name: `${your queue name}_rk`</span>
+  },
+  <span class="hljs-attr">exchange</span>: { 
+    <span class="hljs-attr">name</span>: <span class="hljs-string">'exchange_my_queue'</span>, <span class="hljs-comment">// exchange name: `exchange_${your queue name}`</span>
+    durable: <span class="hljs-literal">true</span>, <span class="hljs-comment">// exchange persistence is enabled by default</span>
+    <span class="hljs-built_in">arguments</span>: {}, <span class="hljs-comment">// empty arguments for exchange to assert by default</span>
+    type: <span class="hljs-string">'direct'</span>, <span class="hljs-comment">// direct binding type by default with a name</span>
+  },
+  <span class="hljs-attr">autoAck</span>: <span class="hljs-literal">false</span>, <span class="hljs-comment">// RabbitMQ acknowledge on send is disabled by default, meaning that by default you have to commit your messages.</span>
+  prefetch: <span class="hljs-number">100</span>, <span class="hljs-comment">// consumer prefetch</span>
+  reconnectAttempts: <span class="hljs-number">-1</span>, <span class="hljs-comment">// infinite amount of reconnect attempts</span>
+  reconnectTimeoutMillis: <span class="hljs-number">1000</span>, <span class="hljs-comment">// 1 second window between failing reconnect attempts</span>
+  deadLetterQueue: { <span class="hljs-comment">// dead letter queue is built and bound by default</span>
+    name: <span class="hljs-string">'dlq_my_queue'</span>, <span class="hljs-comment">// dead letter queue name: `dlq_${your queue name}`</span>
+    exchangeName: <span class="hljs-string">'exchange_dlq_my_queue'</span>, <span class="hljs-comment">// dead letter queue exchange name: `exchange_${dead letter queue name}`</span>
+    exchangeType: <span class="hljs-string">'fanout'</span>, <span class="hljs-comment">// fanout type for dead letter exchange by default </span>
+  }
+};</code></pre>
+				<p>As for publisher, the only required field is the name of the exchange to publish to, everything else will be filled with default values by publisher itself.
+				Here is an example of publisher configs with <em>my_exchange</em> exchange name:</p>
+				<pre><code class="language-javascript"><span class="hljs-keyword">const</span> configs = {
+  <span class="hljs-attr">exchange</span>: {
+    <span class="hljs-attr">name</span>: <span class="hljs-string">'my_exchange'</span>,
+    <span class="hljs-attr">durable</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// exchange persistence is enabled by default</span>
+    <span class="hljs-built_in">arguments</span>: {}, <span class="hljs-comment">// empty arguments for exchange to assert by default</span>
+    type: <span class="hljs-string">'direct'</span>, <span class="hljs-comment">// direct binding type by default</span>
+  },
+  <span class="hljs-attr">publisherConfirms</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// publisher confirmations are enabled by default</span>
+  reconnectAttempts: <span class="hljs-number">-1</span>, <span class="hljs-comment">// infinite amount of reconnect attempts</span>
+  reconnectTimeoutMillis: <span class="hljs-number">1000</span>, <span class="hljs-comment">// 1 second window between failing reconnect attempts</span>
+};</code></pre>
+				<h3 id="usage">Usage</h3>
+				<p><strong>Topic exchange type</strong></p>
+				<p><strong>With custom setup function</strong></p>
+				<p>At this point of time, standard consumer configs are supposed to build a one-to-one relationships between exchanges and queues.
+					Obviously, it might not be suitable for use cases, when we need to leverage, for example, routing based bindings between one exchange and many queues.
+				Therefore custom setup functions can be used to build consumers and publishers. Here is a snippet that makes of use such approach:</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { RabbitMqConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqPublisherConfirmationError } <span class="hljs-keyword">from</span> <span class="hljs-string">'../src'</span>;
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> connectionFactory = <span class="hljs-keyword">new</span> RabbitMqConnectionFactory();
+  connectionFactory.setUri(<span class="hljs-string">'amqp://localhost:5672'</span>);
+  <span class="hljs-keyword">const</span> rabbitMqConnection = <span class="hljs-keyword">await</span> connectionFactory.newConnection();
+  <span class="hljs-keyword">const</span> consumerFactory = <span class="hljs-keyword">new</span> ConsumerFactory(rabbitMqConnection);
+  consumerFactory.setCustomSetupFunction(<span class="hljs-keyword">async</span> (connection) =&gt; { <span class="hljs-comment">// setting up our function</span>
+    <span class="hljs-keyword">const</span> channel = <span class="hljs-keyword">await</span> connection.createChannel();
+    <span class="hljs-keyword">await</span> channel.assertExchange(<span class="hljs-string">'exchange'</span>, <span class="hljs-string">'topic'</span>, {});
+    <span class="hljs-keyword">const</span> queueMetadata = <span class="hljs-keyword">await</span> channel.assertQueue(<span class="hljs-string">'queue'</span>, {
+      durable: <span class="hljs-literal">true</span>,
+    });
+
+    <span class="hljs-keyword">await</span> channel.bindQueue(queueMetadata.queue, <span class="hljs-string">'exchange'</span>, <span class="hljs-string">'route.#'</span>, <span class="hljs-keyword">this</span>.configs.queue.arguments);
+    <span class="hljs-keyword">await</span> channel.prefetch(<span class="hljs-number">50</span>);
+
+    <span class="hljs-keyword">return</span> {channel, prefetch: <span class="hljs-number">50</span>}; <span class="hljs-comment">// returning an object with channel and prefetch count. Prefetch is optional</span>
+  });
+
+  <span class="hljs-keyword">const</span> consumer = <span class="hljs-keyword">await</span> consumerFactory.newConsumer();
+
+  consumer.startConsuming().subscribe({
+    next: <span class="hljs-function">(<span class="hljs-params">msg</span>) =&gt;</span> {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Received message'</span>, msg);
+      consumer.commitMessage(msg);
+    },
+    error: <span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+      <span class="hljs-keyword">if</span> (error <span class="hljs-keyword">instanceof</span> RabbitMqConnectionClosedError)
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">void</span> <span class="hljs-built_in">console</span>.error(<span class="hljs-string">'Connection was closed'</span>);
+
+      <span class="hljs-keyword">if</span> (error <span class="hljs-keyword">instanceof</span> RabbitMqChannelClosedError)
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">void</span> <span class="hljs-built_in">console</span>.error(<span class="hljs-string">'Channel was closed by the server'</span>);
+
+      <span class="hljs-keyword">if</span> (error <span class="hljs-keyword">instanceof</span> RabbitMqChannelCancelledError)
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">void</span> <span class="hljs-built_in">console</span>.error(<span class="hljs-string">'Channel cancellation occurred'</span>);
+    },
+  });
+
+  <span class="hljs-keyword">const</span> anotherConnection = <span class="hljs-keyword">await</span> connectionFactory.newConnection();
+  <span class="hljs-keyword">const</span> publisherFactory = <span class="hljs-keyword">new</span> PublisherFactory(anotherConnection);
+  publisherFactory.setCustomSetupFunction(<span class="hljs-keyword">async</span> (connection) =&gt; {
+    <span class="hljs-keyword">const</span> channel = <span class="hljs-keyword">await</span> connection.createConfirmChannel();
+    <span class="hljs-keyword">await</span> channel.assertExchange(<span class="hljs-string">'exchange'</span>, <span class="hljs-string">'topic'</span>, {});
+    <span class="hljs-keyword">const</span> queueMetadata = <span class="hljs-keyword">await</span> channel.assertQueue(<span class="hljs-string">'queue'</span>, {
+      durable: <span class="hljs-literal">true</span>,
+    });
+
+    <span class="hljs-keyword">await</span> channel.bindQueue(queueMetadata.queue, <span class="hljs-string">'exchange'</span>, <span class="hljs-string">'route.#'</span>, <span class="hljs-keyword">this</span>.configs.queue.arguments);
+    <span class="hljs-keyword">return</span> {channel}; <span class="hljs-comment">// returning an object with channel</span>
+  });
+  <span class="hljs-keyword">const</span> publisher = <span class="hljs-keyword">await</span> publisherFactory.newPublisher();
+
+  publisher.actionsStream().subscribe({
+    next: <span class="hljs-built_in">console</span>.log,
+    error: <span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+      <span class="hljs-keyword">if</span> (error <span class="hljs-keyword">instanceof</span> RabbitMqPublisherConfirmationError)
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">void</span> <span class="hljs-built_in">console</span>.error(<span class="hljs-string">'Sent message failed to be confirmed'</span>);
+    },
+  });
+
+  setInterval(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> publisher.publishMessage(Buffer.from(<span class="hljs-string">'hello hello!'</span>), <span class="hljs-string">`route.<span class="hljs-subst">${Math.ceil(Math.random() * 10)}</span>`</span>), <span class="hljs-number">1000</span>);
+}
+
+main();</code></pre>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_errors_rabbitmq_channel_cancelled_error_.html">"errors/rabbitmq-<wbr>channel-<wbr>cancelled.error"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_errors_rabbitmq_channel_closed_error_.html">"errors/rabbitmq-<wbr>channel-<wbr>closed.error"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_errors_rabbitmq_channel_error_.html">"errors/rabbitmq-<wbr>channel.error"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_errors_rabbitmq_connection_closed_error_.html">"errors/rabbitmq-<wbr>connection-<wbr>closed.error"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_errors_rabbitmq_connection_error_.html">"errors/rabbitmq-<wbr>connection.error"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_errors_rabbitmq_consumer_setup_error_.html">"errors/rabbitmq-<wbr>consumer-<wbr>setup.error"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_errors_rabbitmq_publisher_confirmation_error_.html">"errors/rabbitmq-<wbr>publisher-<wbr>confirmation.error"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_errors_rabbitmq_publisher_setup_error_.html">"errors/rabbitmq-<wbr>publisher-<wbr>setup.error"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_errors_rabbitmq_error_.html">"errors/rabbitmq.error"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_factories_consumer_factory_.html">"factories/consumer-<wbr>factory"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_factories_publisher_factory_.html">"factories/publisher-<wbr>factory"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_factories_rabbit_mq_connection_factory_.html">"factories/rabbit-<wbr>mq-<wbr>connection-<wbr>factory"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_index_.html">"index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_interfaces_consumer_configs_.html">"interfaces/consumer-<wbr>configs"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_interfaces_publisher_configs_.html">"interfaces/publisher-<wbr>configs"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_interfaces_rabbit_mq_setup_function_.html">"interfaces/rabbit-<wbr>mq-<wbr>setup-<wbr>function"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_interfaces_rabbitmq_peer_.html">"interfaces/rabbitmq-<wbr>peer"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_models_consumer_.html">"models/consumer"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_models_publisher_.html">"models/publisher"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_models_rabbitmq_connection_.html">"models/rabbitmq-<wbr>connection"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

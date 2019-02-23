@@ -1,7 +1,7 @@
-import { ConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqPublisherConfirmationError } from '../src';
+import { ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqConnectionFactory, RabbitMqPublisherConfirmationError } from '../src';
 
 async function main() {
-  const connectionFactory = new ConnectionFactory();
+  const connectionFactory = new RabbitMqConnectionFactory();
   connectionFactory.setUri('amqp://localhost:5672');
   const rabbitMqConnection = await connectionFactory.newConnection();
   const consumerFactory = new ConsumerFactory(rabbitMqConnection);

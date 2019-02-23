@@ -7,9 +7,9 @@ import { RabbitMqConsumerSetupError } from './errors/rabbitmq-consumer-setup.err
 import { RabbitMqPublisherConfirmationError} from './errors/rabbitmq-publisher-confirmation.error';
 import { RabbitMqPublisherSetupError} from './errors/rabbitmq-publisher-setup.error';
 import { RabbitMqError } from './errors/rabbitmq.error';
-import { ConnectionFactory } from './factories/connection-factory';
 import { ConsumerFactory } from './factories/consumer-factory';
 import { PublisherFactory } from './factories/publisher-factory';
+import { RabbitMqConnectionFactory } from './factories/rabbit-mq-connection-factory';
 import { ConsumerConfigs } from './interfaces/consumer-configs';
 import { PublisherConfigs } from './interfaces/publisher-configs';
 import { RabbitMqPeer } from './interfaces/rabbitmq-peer';
@@ -18,7 +18,7 @@ import { Publisher } from './models/publisher';
 import { RabbitMqConnection } from './models/rabbitmq-connection';
 
 export {
-  ConnectionFactory,
+  RabbitMqConnectionFactory,
   ConsumerFactory,
   PublisherFactory,
   RabbitMqError,

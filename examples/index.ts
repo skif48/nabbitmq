@@ -1,60 +1,29 @@
-import { ConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqError, RabbitMqPublisherConfirmationError } from '../src';
+import { ConsumerFactory, PublisherFactory, RabbitMqConnectionFactory } from '../src';
 
 async function main() {
-  const connectionFactory = new ConnectionFactory();
+  const connectionFactory = new RabbitMqConnectionFactory();
   connectionFactory.setUri('amqp://localhost:5672');
   const connection = await connectionFactory.newConnection();
   const consumerFactory = new ConsumerFactory(connection);
-  consumerFactory.setConfigs({
-    queue: {
-      name: 'super_queue',
-      bindingPattern: 'route.#',
-    },
-    exchange: {
-      type: 'topic',
-    },
-    noDeadLetterQueue: true,
-    autoAck: false,
-  });
+  consumerFactory.setConfigs({queue: {name: 'super_queue'}});
   const consumer = await consumerFactory.newConsumer();
 
+  console.log(consumer.getActiveConfigs());
   consumer.startConsuming().subscribe({
     next: (msg) => {
-      console.log('Received message', msg);
+      console.log(msg);
       consumer.commitMessage(msg);
     },
-    error: (error) => {
-      if (error instanceof RabbitMqConnectionClosedError)
-        return void console.error('Connection was closed');
-
-      if (error instanceof RabbitMqChannelClosedError)
-        return void console.error('Channel was closed by the server');
-
-      if (error instanceof RabbitMqChannelCancelledError)
-        return void console.error('Channel cancellation occurred');
-    },
+    error: console.error,
   });
 
   const anotherConnection = await connectionFactory.newConnection();
   const publisherFactory = new PublisherFactory(anotherConnection);
-  publisherFactory.setConfigs({
-    exchange: {
-      name: consumer.getActiveConfigs().exchange.name,
-      type: 'topic',
-    },
-    publisherConfirms: true,
-  });
+  publisherFactory.setConfigs({exchange: {name: consumer.getActiveConfigs().exchange.name}});
   const publisher = await publisherFactory.newPublisher();
-
-  publisher.actionsStream().subscribe({
-    next: console.log,
-    error: (error) => {
-      if (error instanceof RabbitMqPublisherConfirmationError)
-        return void console.error('Sent message failed to be confirmed');
-    },
-  });
-
-  setInterval(() => publisher.publishMessage(Buffer.from('hello hello!'), `route.${Math.ceil(Math.random() * 10)}`), 1000);
+  console.log(publisher.getActiveConfigs());
+  publisher.actionsStream().subscribe({next: console.log, error: console.error});
+  setInterval(() => publisher.publishMessage(Buffer.from('hello hello!'), `${consumer.getActiveConfigs().queue.name}_rk`), 1000);
 }
 
 main();
