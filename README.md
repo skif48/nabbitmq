@@ -155,7 +155,6 @@ async function main() {
   });
   const consumer = await consumerFactory.newConsumer();
 
-  console.log(consumer.getActiveConfigs());
   consumer.startConsuming().subscribe({
     next: (msg) => {
       console.log(msg);
@@ -174,7 +173,6 @@ async function main() {
     publisherConfirms: false,
   });
   const publisher = await publisherFactory.newPublisher();
-  console.log(publisher.getActiveConfigs());
   publisher.actionsStream().subscribe({next: console.log, error: console.error});
   setInterval(() => publisher.publishMessage(Buffer.from('hello hello!'), `route.${Math.ceil(Math.random() * 10)}`), 1000);
 }
@@ -184,6 +182,7 @@ main();
 ```
 
 **With custom setup function**
+
 Let's see how we can achieve the same as in the example above, but instead of config objects we're going to supply a custom setup function
 
 ```typescript
