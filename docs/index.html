@@ -68,9 +68,10 @@
 				</p>
 				<p><strong>Node.js library for interacting with RabbitMQ based on RxJS streams</strong></p>
 				<p><a href="https://badge.fury.io/js/nabbitmq"><img src="https://badge.fury.io/js/nabbitmq.svg" alt="npm version"></a></p>
-				<p><strong>Any suggestions, any criticism and any help from the open source community is warmly welcomed!</strong></p>
 				<h3 id="installation">Installation</h3>
 				<pre><code class="language-bash">npm install --save nabbitmq</code></pre>
+				<h3 id="project-status">Project status</h3>
+				<p>Project is being actively developed and improved. Any suggestions, help and criticism are warmly welcomed.  </p>
 				<h3 id="description">Description</h3>
 				<p>NabbitMQ is a library that makes it easy for Node.js developers to interact with RabbitMQ. It&#39;s built on top of famous <a href="https://www.npmjs.com/package/amqplib">amqplib</a> package and it leverages RxJS streams.</p>
 				<p>Message queues naturally are streams of events, therefore using RxJS with them is an efficient way for developers to solve complex problems in a very elegant fashion.  </p>
@@ -161,11 +162,54 @@ main();
   reconnectTimeoutMillis: <span class="hljs-number">1000</span>, <span class="hljs-comment">// 1 second window between failing reconnect attempts</span>
 };</code></pre>
 				<h3 id="usage">Usage</h3>
-				<p><strong>Topic exchange type</strong></p>
+				<p><strong>Setting up topic exchange type</strong></p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { ConsumerFactory, PublisherFactory, RabbitMqConnectionFactory } <span class="hljs-keyword">from</span> <span class="hljs-string">'../src'</span>;
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> connectionFactory = <span class="hljs-keyword">new</span> RabbitMqConnectionFactory();
+  connectionFactory.setUri(<span class="hljs-string">'amqp://localhost:5672'</span>);
+  <span class="hljs-keyword">const</span> connection = <span class="hljs-keyword">await</span> connectionFactory.newConnection();
+  <span class="hljs-keyword">const</span> consumerFactory = <span class="hljs-keyword">new</span> ConsumerFactory(connection);
+  consumerFactory.setConfigs({
+    queue: {
+      name: <span class="hljs-string">'queue'</span>,
+      bindingPattern: <span class="hljs-string">'route.#'</span>,
+    },
+    exchange: {
+      name: <span class="hljs-string">'exchange'</span>,
+      <span class="hljs-keyword">type</span>: <span class="hljs-string">'topic'</span>,
+      durable: <span class="hljs-literal">false</span>,
+    },
+    prefetch: <span class="hljs-number">50</span>,
+  });
+  <span class="hljs-keyword">const</span> consumer = <span class="hljs-keyword">await</span> consumerFactory.newConsumer();
+
+  consumer.startConsuming().subscribe({
+    next: <span class="hljs-function">(<span class="hljs-params">msg</span>) =&gt;</span> {
+      <span class="hljs-built_in">console</span>.log(msg);
+      consumer.commitMessage(msg);
+    },
+    error: <span class="hljs-built_in">console</span>.error,
+  });
+
+  <span class="hljs-keyword">const</span> anotherConnection = <span class="hljs-keyword">await</span> connectionFactory.newConnection();
+  <span class="hljs-keyword">const</span> publisherFactory = <span class="hljs-keyword">new</span> PublisherFactory(anotherConnection);
+  publisherFactory.setConfigs({
+    exchange: {
+      name: <span class="hljs-string">'exchange'</span>,
+      <span class="hljs-keyword">type</span>: <span class="hljs-string">'topic'</span>,
+    },
+    publisherConfirms: <span class="hljs-literal">false</span>,
+  });
+  <span class="hljs-keyword">const</span> publisher = <span class="hljs-keyword">await</span> publisherFactory.newPublisher();
+  publisher.actionsStream().subscribe({next: <span class="hljs-built_in">console</span>.log, error: <span class="hljs-built_in">console</span>.error});
+  setInterval(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> publisher.publishMessage(Buffer.from(<span class="hljs-string">'hello hello!'</span>), <span class="hljs-string">`route.<span class="hljs-subst">${Math.ceil(Math.random() * 10)}</span>`</span>), <span class="hljs-number">1000</span>);
+}
+
+main();
+</code></pre>
 				<p><strong>With custom setup function</strong></p>
-				<p>At this point of time, standard consumer configs are supposed to build a one-to-one relationships between exchanges and queues.
-					Obviously, it might not be suitable for use cases, when we need to leverage, for example, routing based bindings between one exchange and many queues.
-				Therefore custom setup functions can be used to build consumers and publishers. Here is a snippet that makes of use such approach:</p>
+				<p>Let&#39;s see how we can achieve the same as in the example above, but instead of config objects we&#39;re going to supply a custom setup function.</p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { RabbitMqConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqPublisherConfirmationError } <span class="hljs-keyword">from</span> <span class="hljs-string">'../src'</span>;
 
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>{
@@ -183,7 +227,7 @@ main();
     <span class="hljs-keyword">await</span> channel.bindQueue(queueMetadata.queue, <span class="hljs-string">'exchange'</span>, <span class="hljs-string">'route.#'</span>, <span class="hljs-keyword">this</span>.configs.queue.arguments);
     <span class="hljs-keyword">await</span> channel.prefetch(<span class="hljs-number">50</span>);
 
-    <span class="hljs-keyword">return</span> {channel, prefetch: <span class="hljs-number">50</span>}; <span class="hljs-comment">// returning an object with channel and prefetch count. Prefetch is optional</span>
+    <span class="hljs-keyword">return</span> {channel, prefetch: <span class="hljs-number">50</span>, autoAck: <span class="hljs-literal">false</span>}; <span class="hljs-comment">// returning an object with channel, prefetch count and automatic acknowledgments flag. Prefetch is optional, auto ack flag too</span>
   });
 
   <span class="hljs-keyword">const</span> consumer = <span class="hljs-keyword">await</span> consumerFactory.newConsumer();
@@ -231,6 +275,43 @@ main();
 }
 
 main();</code></pre>
+				<p><strong>Reconnect</strong></p>
+				<p>Let&#39;s assume that we have a working consumer instance, built either with object based configs or custom setup function.
+				We can build a service, in which this consumer will be injected. Then, active reconnection logic can be implemented in the following way:</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { Message } <span class="hljs-keyword">from</span> <span class="hljs-string">'amqplib'</span>;
+<span class="hljs-keyword">import</span> { ReplaySubject } <span class="hljs-keyword">from</span> <span class="hljs-string">'rxjs/internal/ReplaySubject'</span>;
+<span class="hljs-keyword">import</span> { Consumer, RabbitMqError } <span class="hljs-keyword">from</span> <span class="hljs-string">'nabbitmq'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> ConsumerService {
+  <span class="hljs-keyword">private</span> stream: ReplaySubject&lt;Message&gt;;
+  <span class="hljs-keyword">constructor</span>(<span class="hljs-params">
+    <span class="hljs-keyword">private</span> readonly consumer: Consumer,
+  </span>) {
+    <span class="hljs-keyword">this</span>.init();
+  }
+
+  <span class="hljs-keyword">public</span> init() {
+    <span class="hljs-keyword">this</span>.stream = <span class="hljs-keyword">this</span>.consumer.startConsuming();
+    <span class="hljs-keyword">this</span>.stream.subscribe({
+      next: <span class="hljs-function">(<span class="hljs-params">message</span>) =&gt;</span> {
+        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Received a message'</span>, message);
+        <span class="hljs-keyword">this</span>.consumer.commitMessage(message);
+      },
+      error: <span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+        <span class="hljs-keyword">if</span> (error <span class="hljs-keyword">instanceof</span> RabbitMqError) {
+          <span class="hljs-keyword">this</span>.consumer.reconnect().toPromise() <span class="hljs-comment">// reconnect method returns an observable, which will complete once connection is reestablished</span>
+            .then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-keyword">this</span>.init()) <span class="hljs-comment">// something like mutual recursion</span>
+            .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> <span class="hljs-built_in">console</span>.error(<span class="hljs-string">'Failed to reconnect:'</span>, err));
+        }
+      },
+    });
+  }
+}</code></pre>
+				<p>The same logic can be reproduced for publisher instances.</p>
+				<h3 id="api-docs">API Docs</h3>
+				<p>Detailed API docs can be found <a href="https://skif48.github.io/nabbitmq/">here</a>. Generated with <a href="https://typedoc.org/">TypeDoc</a>.</p>
+				<h3 id="license">License</h3>
+				<p>NabbitMQ is MIT Licensed.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
