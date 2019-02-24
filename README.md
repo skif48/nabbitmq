@@ -12,8 +12,6 @@
 ```bash
 npm install --save nabbitmq
 ```
-### API Docs
-Detailed API docs can be found [here](https://skif48.github.io/nabbitmq/).
 
 ### Project status
 Project is being actively developed and improved. Any suggestions, help and criticism are warmly welcomed.  
@@ -293,3 +291,9 @@ export class ConsumerService {
 ```
 
 The same logic can be reproduced for publisher instances.
+
+### API Docs
+Detailed API docs can be found [here](https://skif48.github.io/nabbitmq/). Generated with [TypeDoc](https://typedoc.org/).
+
+### License
+NabbitMQ is MIT Licensed.
