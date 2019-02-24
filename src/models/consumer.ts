@@ -154,7 +154,10 @@ export class Consumer implements RabbitMqPeer {
    */
   public reconnect() {
     const connectionFactory = new RabbitMqConnectionFactory();
-    connectionFactory.setUri(this.connection.getUri());
+    if (this.connection.getUri())
+      connectionFactory.setUri(this.connection.getUri());
+    else
+      connectionFactory.setOptions(this.connection.getOptions());
     return new Observable<void>((subscriber) => {
       connectionFactory
         .newConnection()

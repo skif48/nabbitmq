@@ -1,4 +1,6 @@
-import { ConsumerFactory, PublisherFactory, RabbitMqConnectionFactory } from '../src';
+import { ConsumerFactory, PublisherFactory, RabbitMqConnectionFactory } from '../../src';
+import { ConsumerService } from './consumer-service';
+import { PublisherService } from './publisher-service';
 
 async function main() {
   const connectionFactory = new RabbitMqConnectionFactory();
@@ -19,14 +21,7 @@ async function main() {
     autoAck: false,
   });
   const consumer = await consumerFactory.newConsumer();
-
-  consumer.startConsuming().subscribe({
-    next: (msg) => {
-      console.log(msg);
-      consumer.commitMessage(msg);
-    },
-    error: console.error,
-  });
+  const consumerService = new ConsumerService(consumer);
 
   const anotherConnection = await connectionFactory.newConnection();
   const publisherFactory = new PublisherFactory(anotherConnection);
@@ -38,8 +33,9 @@ async function main() {
     publisherConfirms: false,
   });
   const publisher = await publisherFactory.newPublisher();
-  publisher.actionsStream().subscribe({next: console.log, error: console.error});
-  setInterval(() => publisher.publishMessage(Buffer.from('hello hello!'), `route.${Math.ceil(Math.random() * 10)}`), 1000);
+  const publisherService = new PublisherService(publisher);
+
+  setInterval(() => publisherService.sendMessage('hello world'), 15000);
 }
 
 main();

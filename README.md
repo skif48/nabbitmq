@@ -7,15 +7,17 @@
 
 [![npm version](https://badge.fury.io/js/nabbitmq.svg)](https://badge.fury.io/js/nabbitmq)
 
-**Any suggestions, any criticism and any help from the open source community is warmly welcomed!**
-
 ### Installation
 
 ```bash
 npm install --save nabbitmq
 ```
 ### API Docs
-Documentation can be found [here](https://skif48.github.io/nabbitmq/)
+Detailed API docs can be found [here](https://skif48.github.io/nabbitmq/).
+
+### Project status
+Project is being actively developed and improved. Any suggestions, help and criticism are warmly welcomed.  
+
 ### Description
 
 NabbitMQ is a library that makes it easy for Node.js developers to interact with RabbitMQ. It's built on top of famous [amqplib](https://www.npmjs.com/package/amqplib) package and it leverages RxJS streams.
@@ -184,7 +186,7 @@ main();
 
 **With custom setup function**
 
-Let's see how we can achieve the same as in the example above, but instead of config objects we're going to supply a custom setup function
+Let's see how we can achieve the same as in the example above, but instead of config objects we're going to supply a custom setup function.
 
 ```typescript
 import { RabbitMqConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqPublisherConfirmationError } from '../src';
@@ -253,3 +255,41 @@ async function main() {
 
 main();
 ```
+
+**Reconnect**
+
+Let's assume that we have a working consumer instance, built either with object based configs or custom setup function.
+We can build a service, in which this consumer will be injected. Then, active reconnection logic can be implemented in the following way:
+```typescript
+import { Message } from 'amqplib';
+import { ReplaySubject } from 'rxjs/internal/ReplaySubject';
+import { Consumer, RabbitMqError } from 'nabbitmq';
+
+export class ConsumerService {
+  private stream: ReplaySubject<Message>;
+  constructor(
+    private readonly consumer: Consumer,
+  ) {
+    this.init();
+  }
+
+  public init() {
+    this.stream = this.consumer.startConsuming();
+    this.stream.subscribe({
+      next: (message) => {
+        console.log('Received a message', message);
+        this.consumer.commitMessage(message);
+      },
+      error: (error) => {
+        if (error instanceof RabbitMqError) {
+          this.consumer.reconnect().toPromise() // reconnect method returns an observable, which will complete once connection is reestablished
+            .then(() => this.init()) // something like mutual recursion
+            .catch((err) => console.error('Failed to reconnect:', err));
+        }
+      },
+    });
+  }
+}
+```
+
+The same logic can be reproduced for publisher instances.
