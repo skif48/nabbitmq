@@ -38,6 +38,8 @@
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -66,31 +68,117 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>External modules</h3>
+							<h3>Classes</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-external-module"><a href="modules/_errors_rabbitmq_channel_cancelled_error_.html" class="tsd-kind-icon">"errors/rabbitmq-<wbr>channel-<wbr>cancelled.error"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_errors_rabbitmq_channel_closed_error_.html" class="tsd-kind-icon">"errors/rabbitmq-<wbr>channel-<wbr>closed.error"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_errors_rabbitmq_channel_error_.html" class="tsd-kind-icon">"errors/rabbitmq-<wbr>channel.error"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_errors_rabbitmq_connection_closed_error_.html" class="tsd-kind-icon">"errors/rabbitmq-<wbr>connection-<wbr>closed.error"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_errors_rabbitmq_connection_error_.html" class="tsd-kind-icon">"errors/rabbitmq-<wbr>connection.error"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_errors_rabbitmq_consumer_setup_error_.html" class="tsd-kind-icon">"errors/rabbitmq-<wbr>consumer-<wbr>setup.error"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_errors_rabbitmq_publisher_confirmation_error_.html" class="tsd-kind-icon">"errors/rabbitmq-<wbr>publisher-<wbr>confirmation.error"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_errors_rabbitmq_publisher_setup_error_.html" class="tsd-kind-icon">"errors/rabbitmq-<wbr>publisher-<wbr>setup.error"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_errors_rabbitmq_error_.html" class="tsd-kind-icon">"errors/rabbitmq.error"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_factories_consumer_factory_.html" class="tsd-kind-icon">"factories/consumer-<wbr>factory"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_factories_publisher_factory_.html" class="tsd-kind-icon">"factories/publisher-<wbr>factory"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_factories_rabbit_mq_connection_factory_.html" class="tsd-kind-icon">"factories/rabbit-<wbr>mq-<wbr>connection-<wbr>factory"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_index_.html" class="tsd-kind-icon">"index"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_interfaces_consumer_configs_.html" class="tsd-kind-icon">"interfaces/consumer-<wbr>configs"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_interfaces_publisher_configs_.html" class="tsd-kind-icon">"interfaces/publisher-<wbr>configs"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_interfaces_rabbit_mq_setup_function_.html" class="tsd-kind-icon">"interfaces/rabbit-<wbr>mq-<wbr>setup-<wbr>function"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_interfaces_rabbitmq_peer_.html" class="tsd-kind-icon">"interfaces/rabbitmq-<wbr>peer"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_models_consumer_.html" class="tsd-kind-icon">"models/consumer"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_models_publisher_.html" class="tsd-kind-icon">"models/publisher"</a></li>
-								<li class="tsd-kind-external-module"><a href="modules/_models_rabbitmq_connection_.html" class="tsd-kind-icon">"models/rabbitmq-<wbr>connection"</a></li>
+								<li class="tsd-kind-class"><a href="classes/consumer.html" class="tsd-kind-icon">Consumer</a></li>
+								<li class="tsd-kind-class"><a href="classes/consumerfactory.html" class="tsd-kind-icon">Consumer<wbr>Factory</a></li>
+								<li class="tsd-kind-class"><a href="classes/publisher.html" class="tsd-kind-icon">Publisher</a></li>
+								<li class="tsd-kind-class"><a href="classes/publisherfactory.html" class="tsd-kind-icon">Publisher<wbr>Factory</a></li>
+								<li class="tsd-kind-class"><a href="classes/rabbitmqchannelcancellederror.html" class="tsd-kind-icon">Rabbit<wbr>MqChannel<wbr>Cancelled<wbr>Error</a></li>
+								<li class="tsd-kind-class"><a href="classes/rabbitmqchannelclosederror.html" class="tsd-kind-icon">Rabbit<wbr>MqChannel<wbr>Closed<wbr>Error</a></li>
+								<li class="tsd-kind-class"><a href="classes/rabbitmqchannelerror.html" class="tsd-kind-icon">Rabbit<wbr>MqChannel<wbr>Error</a></li>
+								<li class="tsd-kind-class"><a href="classes/rabbitmqconnection.html" class="tsd-kind-icon">Rabbit<wbr>MqConnection</a></li>
+								<li class="tsd-kind-class"><a href="classes/rabbitmqconnectionclosederror.html" class="tsd-kind-icon">Rabbit<wbr>MqConnection<wbr>Closed<wbr>Error</a></li>
+								<li class="tsd-kind-class"><a href="classes/rabbitmqconnectionerror.html" class="tsd-kind-icon">Rabbit<wbr>MqConnection<wbr>Error</a></li>
+								<li class="tsd-kind-class"><a href="classes/rabbitmqconnectionfactory.html" class="tsd-kind-icon">Rabbit<wbr>MqConnection<wbr>Factory</a></li>
+								<li class="tsd-kind-class"><a href="classes/rabbitmqconsumersetuperror.html" class="tsd-kind-icon">Rabbit<wbr>MqConsumer<wbr>Setup<wbr>Error</a></li>
+								<li class="tsd-kind-class"><a href="classes/rabbitmqerror.html" class="tsd-kind-icon">Rabbit<wbr>MqError</a></li>
+								<li class="tsd-kind-class"><a href="classes/rabbitmqpublisherconfirmationerror.html" class="tsd-kind-icon">Rabbit<wbr>MqPublisher<wbr>Confirmation<wbr>Error</a></li>
+								<li class="tsd-kind-class"><a href="classes/rabbitmqpublishersetuperror.html" class="tsd-kind-icon">Rabbit<wbr>MqPublisher<wbr>Setup<wbr>Error</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface"><a href="interfaces/consumerconfigs.html" class="tsd-kind-icon">Consumer<wbr>Configs</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/publisherconfigs.html" class="tsd-kind-icon">Publisher<wbr>Configs</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/rabbitmqpeer.html" class="tsd-kind-icon">Rabbit<wbr>MqPeer</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias"><a href="globals.html#rabbitmqsetupfunction" class="tsd-kind-icon">Rabbit<wbr>MqSetup<wbr>Function</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-not-exported">
+							<h3>Variables</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#default_prefetch" class="tsd-kind-icon">DEFAULT_<wbr>PREFETCH</a></li>
+								<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#default_reconnect_attempts" class="tsd-kind-icon">DEFAULT_<wbr>RECONNECT_<wbr>ATTEMPTS</a></li>
+								<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#default_reconnect_timeout_millis" class="tsd-kind-icon">DEFAULT_<wbr>RECONNECT_<wbr>TIMEOUT_<wbr>MILLIS</a></li>
 							</ul>
 						</section>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="rabbitmqsetupfunction" class="tsd-anchor"></a>
+					<h3>Rabbit<wbr>MqSetup<wbr>Function</h3>
+					<div class="tsd-signature tsd-kind-icon">Rabbit<wbr>MqSetup<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/14a0ea1/src/interfaces/rabbit-mq-setup-function.ts#L3">interfaces/rabbit-mq-setup-function.ts:3</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-siganture">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>connection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Connection</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>connection: <span class="tsd-signature-type">Connection</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
+				<h2>Variables</h2>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
+					<a name="default_prefetch" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> DEFAULT_<wbr>PREFETCH</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>PREFETCH<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">100</span><span class="tsd-signature-symbol"> =&nbsp;100</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/14a0ea1/src/models/consumer.ts#L17">models/consumer.ts:17</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
+					<a name="default_reconnect_attempts" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> DEFAULT_<wbr>RECONNECT_<wbr>ATTEMPTS</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>RECONNECT_<wbr>ATTEMPTS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">-1</span><span class="tsd-signature-symbol"> =&nbsp;-1</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/14a0ea1/src/models/consumer.ts#L16">models/consumer.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/14a0ea1/src/models/publisher.ts#L17">models/publisher.ts:17</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
+					<a name="default_reconnect_timeout_millis" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> DEFAULT_<wbr>RECONNECT_<wbr>TIMEOUT_<wbr>MILLIS</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>RECONNECT_<wbr>TIMEOUT_<wbr>MILLIS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">1000</span><span class="tsd-signature-symbol"> =&nbsp;1000</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/14a0ea1/src/models/consumer.ts#L15">models/consumer.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/14a0ea1/src/models/publisher.ts#L16">models/publisher.ts:16</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -100,70 +188,76 @@
 					<li class="globals current ">
 						<a href="globals.html"><em>Globals</em></a>
 					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_errors_rabbitmq_channel_cancelled_error_.html">"errors/rabbitmq-<wbr>channel-<wbr>cancelled.error"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_errors_rabbitmq_channel_closed_error_.html">"errors/rabbitmq-<wbr>channel-<wbr>closed.error"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_errors_rabbitmq_channel_error_.html">"errors/rabbitmq-<wbr>channel.error"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_errors_rabbitmq_connection_closed_error_.html">"errors/rabbitmq-<wbr>connection-<wbr>closed.error"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_errors_rabbitmq_connection_error_.html">"errors/rabbitmq-<wbr>connection.error"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_errors_rabbitmq_consumer_setup_error_.html">"errors/rabbitmq-<wbr>consumer-<wbr>setup.error"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_errors_rabbitmq_publisher_confirmation_error_.html">"errors/rabbitmq-<wbr>publisher-<wbr>confirmation.error"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_errors_rabbitmq_publisher_setup_error_.html">"errors/rabbitmq-<wbr>publisher-<wbr>setup.error"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_errors_rabbitmq_error_.html">"errors/rabbitmq.error"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_factories_consumer_factory_.html">"factories/consumer-<wbr>factory"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_factories_publisher_factory_.html">"factories/publisher-<wbr>factory"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_factories_rabbit_mq_connection_factory_.html">"factories/rabbit-<wbr>mq-<wbr>connection-<wbr>factory"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_index_.html">"index"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_consumer_configs_.html">"interfaces/consumer-<wbr>configs"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_publisher_configs_.html">"interfaces/publisher-<wbr>configs"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_rabbit_mq_setup_function_.html">"interfaces/rabbit-<wbr>mq-<wbr>setup-<wbr>function"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_rabbitmq_peer_.html">"interfaces/rabbitmq-<wbr>peer"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_models_consumer_.html">"models/consumer"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_models_publisher_.html">"models/publisher"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_models_rabbitmq_connection_.html">"models/rabbitmq-<wbr>connection"</a>
-					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-class">
+						<a href="classes/consumer.html" class="tsd-kind-icon">Consumer</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/consumerfactory.html" class="tsd-kind-icon">Consumer<wbr>Factory</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/publisher.html" class="tsd-kind-icon">Publisher</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/publisherfactory.html" class="tsd-kind-icon">Publisher<wbr>Factory</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rabbitmqchannelcancellederror.html" class="tsd-kind-icon">Rabbit<wbr>MqChannel<wbr>Cancelled<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rabbitmqchannelclosederror.html" class="tsd-kind-icon">Rabbit<wbr>MqChannel<wbr>Closed<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rabbitmqchannelerror.html" class="tsd-kind-icon">Rabbit<wbr>MqChannel<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rabbitmqconnection.html" class="tsd-kind-icon">Rabbit<wbr>MqConnection</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rabbitmqconnectionclosederror.html" class="tsd-kind-icon">Rabbit<wbr>MqConnection<wbr>Closed<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rabbitmqconnectionerror.html" class="tsd-kind-icon">Rabbit<wbr>MqConnection<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rabbitmqconnectionfactory.html" class="tsd-kind-icon">Rabbit<wbr>MqConnection<wbr>Factory</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rabbitmqconsumersetuperror.html" class="tsd-kind-icon">Rabbit<wbr>MqConsumer<wbr>Setup<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rabbitmqerror.html" class="tsd-kind-icon">Rabbit<wbr>MqError</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rabbitmqpublisherconfirmationerror.html" class="tsd-kind-icon">Rabbit<wbr>MqPublisher<wbr>Confirmation<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rabbitmqpublishersetuperror.html" class="tsd-kind-icon">Rabbit<wbr>MqPublisher<wbr>Setup<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/consumerconfigs.html" class="tsd-kind-icon">Consumer<wbr>Configs</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/publisherconfigs.html" class="tsd-kind-icon">Publisher<wbr>Configs</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/rabbitmqpeer.html" class="tsd-kind-icon">Rabbit<wbr>MqPeer</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#rabbitmqsetupfunction" class="tsd-kind-icon">Rabbit<wbr>MqSetup<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#default_prefetch" class="tsd-kind-icon">DEFAULT_<wbr>PREFETCH</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#default_reconnect_attempts" class="tsd-kind-icon">DEFAULT_<wbr>RECONNECT_<wbr>ATTEMPTS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#default_reconnect_timeout_millis" class="tsd-kind-icon">DEFAULT_<wbr>RECONNECT_<wbr>TIMEOUT_<wbr>MILLIS</a>
+					</li>
 				</ul>
 			</nav>
 		</div>
