@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>PublisherConfigs | nabbitmq</title>
+	<title>CustomSetupValues | nabbitmq</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="publisherconfigs.html">PublisherConfigs</a>
+					<a href="customsetupvalues.html">CustomSetupValues</a>
 				</li>
 			</ul>
-			<h1>Interface PublisherConfigs</h1>
+			<h1>Interface CustomSetupValues</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +70,15 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">PublisherConfigs</span>
+						<span class="target">CustomSetupValues</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<a href="consumercustomsetupvalues.html" class="tsd-signature-type">ConsumerCustomSetupValues</a>
+							</li>
+							<li>
+								<a href="publishercustomsetupvalues.html" class="tsd-signature-type">PublisherCustomSetupValues</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -81,10 +89,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="publisherconfigs.html#exchange" class="tsd-kind-icon">exchange</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="publisherconfigs.html#publisherconfirms" class="tsd-kind-icon">publisher<wbr>Confirms</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="publisherconfigs.html#reconnectattempts" class="tsd-kind-icon">reconnect<wbr>Attempts</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="publisherconfigs.html#reconnecttimeoutmillis" class="tsd-kind-icon">reconnect<wbr>Timeout<wbr>Millis</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="customsetupvalues.html#channel" class="tsd-kind-icon">channel</a></li>
 							</ul>
 						</section>
 					</div>
@@ -93,64 +98,12 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="exchange" class="tsd-anchor"></a>
-					<h3>exchange</h3>
-					<div class="tsd-signature tsd-kind-icon">exchange<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<a name="channel" class="tsd-anchor"></a>
+					<h3>channel</h3>
+					<div class="tsd-signature tsd-kind-icon">channel<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Channel</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/bdd6ae6/src/interfaces/publisher-configs.ts#L2">interfaces/publisher-configs.ts:2</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> arguments<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span></h5>
-								<ul class="tsd-parameters">
-									<li class="tsd-parameter-index-signature">
-										<h5><span class="tsd-signature-symbol">[</span>x: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></h5>
-									</li>
-								</ul>
-							</li>
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> durable<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> type<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="publisherconfirms" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> publisher<wbr>Confirms</h3>
-					<div class="tsd-signature tsd-kind-icon">publisher<wbr>Confirms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/bdd6ae6/src/interfaces/publisher-configs.ts#L8">interfaces/publisher-configs.ts:8</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="reconnectattempts" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> reconnect<wbr>Attempts</h3>
-					<div class="tsd-signature tsd-kind-icon">reconnect<wbr>Attempts<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/bdd6ae6/src/interfaces/publisher-configs.ts#L10">interfaces/publisher-configs.ts:10</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="reconnecttimeoutmillis" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> reconnect<wbr>Timeout<wbr>Millis</h3>
-					<div class="tsd-signature tsd-kind-icon">reconnect<wbr>Timeout<wbr>Millis<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/bdd6ae6/src/interfaces/publisher-configs.ts#L9">interfaces/publisher-configs.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/bdd6ae6/src/interfaces/rabbit-mq-setup-function.ts#L4">interfaces/rabbit-mq-setup-function.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -217,30 +170,21 @@
 					<li class=" tsd-kind-interface">
 						<a href="consumercustomsetupvalues.html" class="tsd-kind-icon">Consumer<wbr>Custom<wbr>Setup<wbr>Values</a>
 					</li>
-					<li class=" tsd-kind-interface">
-						<a href="customsetupvalues.html" class="tsd-kind-icon">Custom<wbr>Setup<wbr>Values</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="publisherconfigs.html" class="tsd-kind-icon">Publisher<wbr>Configs</a>
+						<a href="customsetupvalues.html" class="tsd-kind-icon">Custom<wbr>Setup<wbr>Values</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="publisherconfigs.html#exchange" class="tsd-kind-icon">exchange</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="publisherconfigs.html#publisherconfirms" class="tsd-kind-icon">publisher<wbr>Confirms</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="publisherconfigs.html#reconnectattempts" class="tsd-kind-icon">reconnect<wbr>Attempts</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="publisherconfigs.html#reconnecttimeoutmillis" class="tsd-kind-icon">reconnect<wbr>Timeout<wbr>Millis</a>
+								<a href="customsetupvalues.html#channel" class="tsd-kind-icon">channel</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface">
+						<a href="publisherconfigs.html" class="tsd-kind-icon">Publisher<wbr>Configs</a>
+					</li>
 					<li class=" tsd-kind-interface">
 						<a href="publishercustomsetupvalues.html" class="tsd-kind-icon">Publisher<wbr>Custom<wbr>Setup<wbr>Values</a>
 					</li>

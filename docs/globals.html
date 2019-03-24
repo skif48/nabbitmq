@@ -91,14 +91,18 @@
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-interface"><a href="interfaces/consumerconfigs.html" class="tsd-kind-icon">Consumer<wbr>Configs</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/consumercustomsetupvalues.html" class="tsd-kind-icon">Consumer<wbr>Custom<wbr>Setup<wbr>Values</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/customsetupvalues.html" class="tsd-kind-icon">Custom<wbr>Setup<wbr>Values</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/publisherconfigs.html" class="tsd-kind-icon">Publisher<wbr>Configs</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/publishercustomsetupvalues.html" class="tsd-kind-icon">Publisher<wbr>Custom<wbr>Setup<wbr>Values</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/rabbitmqpeer.html" class="tsd-kind-icon">Rabbit<wbr>MqPeer</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-type-alias"><a href="globals.html#rabbitmqsetupfunction" class="tsd-kind-icon">Rabbit<wbr>MqSetup<wbr>Function</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#rabbitmqconsumersetupfunction" class="tsd-kind-icon">Rabbit<wbr>MqConsumer<wbr>Setup<wbr>Function</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#rabbitmqpublishersetupfunction" class="tsd-kind-icon">Rabbit<wbr>MqPublisher<wbr>Setup<wbr>Function</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-not-exported">
@@ -115,12 +119,12 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Type aliases</h2>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
-					<a name="rabbitmqsetupfunction" class="tsd-anchor"></a>
-					<h3>Rabbit<wbr>MqSetup<wbr>Function</h3>
-					<div class="tsd-signature tsd-kind-icon">Rabbit<wbr>MqSetup<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<a name="rabbitmqconsumersetupfunction" class="tsd-anchor"></a>
+					<h3>Rabbit<wbr>MqConsumer<wbr>Setup<wbr>Function</h3>
+					<div class="tsd-signature tsd-kind-icon">Rabbit<wbr>MqConsumer<wbr>Setup<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/14a0ea1/src/interfaces/rabbit-mq-setup-function.ts#L3">interfaces/rabbit-mq-setup-function.ts:3</a></li>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/bdd6ae6/src/interfaces/rabbit-mq-setup-function.ts#L18">interfaces/rabbit-mq-setup-function.ts:18</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -128,7 +132,7 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-siganture">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>connection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Connection</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>connection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Connection</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/consumercustomsetupvalues.html" class="tsd-signature-type">ConsumerCustomSetupValues</a><span class="tsd-signature-symbol">&gt;</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
@@ -138,7 +142,38 @@
 												<h5>connection: <span class="tsd-signature-type">Connection</span></h5>
 											</li>
 										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/consumercustomsetupvalues.html" class="tsd-signature-type">ConsumerCustomSetupValues</a><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="rabbitmqpublishersetupfunction" class="tsd-anchor"></a>
+					<h3>Rabbit<wbr>MqPublisher<wbr>Setup<wbr>Function</h3>
+					<div class="tsd-signature tsd-kind-icon">Rabbit<wbr>MqPublisher<wbr>Setup<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/bdd6ae6/src/interfaces/rabbit-mq-setup-function.ts#L19">interfaces/rabbit-mq-setup-function.ts:19</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-siganture">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>connection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Connection</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/publishercustomsetupvalues.html" class="tsd-signature-type">PublisherCustomSetupValues</a><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>connection: <span class="tsd-signature-type">Connection</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/publishercustomsetupvalues.html" class="tsd-signature-type">PublisherCustomSetupValues</a><span class="tsd-signature-symbol">&gt;</span></h4>
 									</li>
 								</ul>
 							</li>
@@ -154,7 +189,7 @@
 					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>PREFETCH<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">100</span><span class="tsd-signature-symbol"> =&nbsp;100</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/14a0ea1/src/models/consumer.ts#L17">models/consumer.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/bdd6ae6/src/models/consumer.ts#L17">models/consumer.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -164,8 +199,8 @@
 					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>RECONNECT_<wbr>ATTEMPTS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">-1</span><span class="tsd-signature-symbol"> =&nbsp;-1</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/14a0ea1/src/models/consumer.ts#L16">models/consumer.ts:16</a></li>
-							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/14a0ea1/src/models/publisher.ts#L17">models/publisher.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/bdd6ae6/src/models/consumer.ts#L16">models/consumer.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/bdd6ae6/src/models/publisher.ts#L17">models/publisher.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -175,8 +210,8 @@
 					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>RECONNECT_<wbr>TIMEOUT_<wbr>MILLIS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">1000</span><span class="tsd-signature-symbol"> =&nbsp;1000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/14a0ea1/src/models/consumer.ts#L15">models/consumer.ts:15</a></li>
-							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/14a0ea1/src/models/publisher.ts#L16">models/publisher.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/bdd6ae6/src/models/consumer.ts#L15">models/consumer.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/skif48/nabbit/blob/bdd6ae6/src/models/publisher.ts#L16">models/publisher.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -241,13 +276,25 @@
 						<a href="interfaces/consumerconfigs.html" class="tsd-kind-icon">Consumer<wbr>Configs</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/consumercustomsetupvalues.html" class="tsd-kind-icon">Consumer<wbr>Custom<wbr>Setup<wbr>Values</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/customsetupvalues.html" class="tsd-kind-icon">Custom<wbr>Setup<wbr>Values</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/publisherconfigs.html" class="tsd-kind-icon">Publisher<wbr>Configs</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/publishercustomsetupvalues.html" class="tsd-kind-icon">Publisher<wbr>Custom<wbr>Setup<wbr>Values</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/rabbitmqpeer.html" class="tsd-kind-icon">Rabbit<wbr>MqPeer</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#rabbitmqsetupfunction" class="tsd-kind-icon">Rabbit<wbr>MqSetup<wbr>Function</a>
+						<a href="globals.html#rabbitmqconsumersetupfunction" class="tsd-kind-icon">Rabbit<wbr>MqConsumer<wbr>Setup<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#rabbitmqpublishersetupfunction" class="tsd-kind-icon">Rabbit<wbr>MqPublisher<wbr>Setup<wbr>Function</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="globals.html#default_prefetch" class="tsd-kind-icon">DEFAULT_<wbr>PREFETCH</a>
