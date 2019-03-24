@@ -23,7 +23,7 @@ async function main() {
   consumer.startConsuming().subscribe({
     next: (msg) => {
       console.log('Received message', msg);
-      // consumer.commitMessage(msg);
+      consumer.commitMessage(msg);
     },
     error: (error) => {
       if (error instanceof RabbitMqConnectionClosedError)

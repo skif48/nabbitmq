@@ -50,7 +50,6 @@ export class ConsumerFactory {
       await consumer.init(this.connection);
       return consumer;
     } catch (err) {
-      console.error(err);
       throw new RabbitMqConsumerSetupError(err.message);
     }
   }

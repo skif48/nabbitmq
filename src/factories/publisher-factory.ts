@@ -51,7 +51,6 @@ export class PublisherFactory {
       }
       return publisher;
     } catch (err) {
-      console.error(err);
       throw new RabbitMqPublisherSetupError(err.message);
     }
   }
