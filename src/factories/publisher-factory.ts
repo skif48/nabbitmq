@@ -1,6 +1,6 @@
 import { RabbitMqPublisherSetupError } from '../errors/rabbitmq-publisher-setup.error';
 import { PublisherConfigs } from '../interfaces/publisher-configs';
-import { RabbitMqSetupFunction } from '../interfaces/rabbit-mq-setup-function';
+import { RabbitMqPublisherSetupFunction } from '../interfaces/rabbit-mq-setup-function';
 import { Publisher } from '../models/publisher';
 import { RabbitMqConnection } from '../models/rabbitmq-connection';
 
@@ -9,7 +9,7 @@ import { RabbitMqConnection } from '../models/rabbitmq-connection';
  */
 export class PublisherFactory {
   private configs: PublisherConfigs;
-  private setupFunction: RabbitMqSetupFunction;
+  private setupFunction: RabbitMqPublisherSetupFunction;
 
   /**
    *
@@ -31,7 +31,7 @@ export class PublisherFactory {
    * Sets setup function, with which every Publisher instance will be produced
    * @param setupFunction
    */
-  public setCustomSetupFunction(setupFunction: RabbitMqSetupFunction) {
+  public setCustomSetupFunction(setupFunction: RabbitMqPublisherSetupFunction) {
     this.setupFunction = setupFunction;
   }
 
@@ -51,6 +51,7 @@ export class PublisherFactory {
       }
       return publisher;
     } catch (err) {
+      console.error(err);
       throw new RabbitMqPublisherSetupError(err.message);
     }
   }
