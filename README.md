@@ -194,17 +194,17 @@ async function main() {
   connectionFactory.setUri('amqp://localhost:5672');
   const rabbitMqConnection = await connectionFactory.newConnection();
   const consumerFactory = new ConsumerFactory(rabbitMqConnection);
-  consumerFactory.setCustomSetupFunction(async (connection) => { // setting up our function
+  consumerFactory.setCustomSetupFunction(async (connection) => {
     const channel = await connection.createChannel();
     await channel.assertExchange('exchange', 'topic', {});
     const queueMetadata = await channel.assertQueue('queue', {
       durable: true,
     });
 
-    await channel.bindQueue(queueMetadata.queue, 'exchange', 'route.#', this.configs.queue.arguments);
-    await channel.prefetch(50);
+    await channel.bindQueue(queueMetadata.queue, 'exchange', 'route.#');
+    await channel.prefetch(10);
 
-    return {channel, prefetch: 50, autoAck: false}; // returning an object with channel, prefetch count and automatic acknowledgments flag. Prefetch is optional, auto ack flag too
+    return {channel, queue: 'queue', prefetch: 10, autoAck: false};
   });
 
   const consumer = await consumerFactory.newConsumer();
@@ -223,6 +223,8 @@ async function main() {
 
       if (error instanceof RabbitMqChannelCancelledError)
         return void console.error('Channel cancellation occurred');
+      
+      // ... and so on
     },
   });
 
@@ -235,8 +237,8 @@ async function main() {
       durable: true,
     });
 
-    await channel.bindQueue(queueMetadata.queue, 'exchange', 'route.#', this.configs.queue.arguments);
-    return {channel}; // returning an object with channel
+    await channel.bindQueue(queueMetadata.queue, 'exchange', 'route.#');
+    return {channel, exchange: 'exchange'};
   });
   const publisher = await publisherFactory.newPublisher();
 
@@ -245,6 +247,8 @@ async function main() {
     error: (error) => {
       if (error instanceof RabbitMqPublisherConfirmationError)
         return void console.error('Sent message failed to be confirmed');
+      
+      // ... and so on
     },
   });
 
