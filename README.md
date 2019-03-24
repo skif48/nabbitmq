@@ -185,6 +185,7 @@ main();
 **With custom setup function**
 
 Let's see how we can achieve the same as in the example above, but instead of config objects we're going to supply a custom setup function.
+For [publishers](https://skif48.github.io/nabbitmq/globals.html#rabbitmqpublishersetupfunction) and [consumers](https://skif48.github.io/nabbitmq/globals.html#rabbitmqconsumersetupfunction) there are different type aliases and requirements for these functions.
 
 ```typescript
 import { RabbitMqConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqPublisherConfirmationError } from '../src';
