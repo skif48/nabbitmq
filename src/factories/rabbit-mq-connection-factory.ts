@@ -37,7 +37,7 @@ export class RabbitMqConnectionFactory {
         throw new Error('Either options or connection uri must be provided');
 
       const amqpConnection = await amqp.connect(this.options || this.uri);
-      return new RabbitMqConnection(amqpConnection, this.uri);
+      return new RabbitMqConnection(amqpConnection, this.options || this.uri);
     } catch (error) {
       throw new RabbitMqConnectionError(`Error while building connection to RabbitMQ: ${error.message}`, error.code);
     }

@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { RabbitMqConnectionError, RabbitMqConnectionFactory } from '../../src';
 
-describe('RabbitMqConnection unit tests', () => {
+describe('RabbitMqConnectionFactory unit tests', () => {
   describe('factory tests', () => {
     before(() => {
       sinon.stub(amqp, 'connect').callsFake(() => Promise.resolve({}));

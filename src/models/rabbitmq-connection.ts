@@ -11,10 +11,10 @@ export class RabbitMqConnection {
     private readonly connection: Connection,
     connectionOptions: string | Options.Connect,
   ) {
-    if (typeof connectionOptions === 'string')
-      this.uri = connectionOptions;
-    else
+    if (typeof connectionOptions !== 'string')
       this.options = connectionOptions;
+    else
+      this.uri = connectionOptions;
   }
 
   /**
