@@ -1,6 +1,6 @@
 import { RabbitMqConsumerSetupError } from "../errors/rabbitmq-consumer-setup.error";
 import { ConsumerConfigs } from "../interfaces/consumer-configs";
-import { RabbitMqSetupFunction } from '../interfaces/rabbit-mq-setup-function';
+import { RabbitMqConsumerSetupFunction } from '../interfaces/rabbit-mq-setup-function';
 import { Consumer } from "../models/consumer";
 import { RabbitMqConnection } from '../models/rabbitmq-connection';
 
@@ -9,7 +9,7 @@ import { RabbitMqConnection } from '../models/rabbitmq-connection';
  */
 export class ConsumerFactory {
   private configs: ConsumerConfigs;
-  private customSetupFunction: RabbitMqSetupFunction;
+  private customSetupFunction: RabbitMqConsumerSetupFunction;
 
   /**
    *
@@ -31,7 +31,7 @@ export class ConsumerFactory {
    * Sets setup function, with which every Publisher instance will be produced
    * @param setupFunction
    */
-  public setCustomSetupFunction(setupFunction: RabbitMqSetupFunction) {
+  public setCustomSetupFunction(setupFunction: RabbitMqConsumerSetupFunction) {
     this.customSetupFunction = setupFunction;
   }
 

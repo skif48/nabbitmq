@@ -12,10 +12,10 @@ async function main() {
       durable: true,
     });
 
-    await channel.bindQueue(queueMetadata.queue, 'exchange', 'route.#', this.configs.queue.arguments);
-    await channel.prefetch(50);
+    await channel.bindQueue(queueMetadata.queue, 'exchange', 'route.#');
+    await channel.prefetch(10);
 
-    return {channel, prefetch: 50, autoAck: false};
+    return {channel, queue: 'queue', prefetch: 10, autoAck: false};
   });
 
   const consumer = await consumerFactory.newConsumer();
@@ -46,8 +46,8 @@ async function main() {
       durable: true,
     });
 
-    await channel.bindQueue(queueMetadata.queue, 'exchange', 'route.#', this.configs.queue.arguments);
-    return {channel};
+    await channel.bindQueue(queueMetadata.queue, 'exchange', 'route.#');
+    return {channel, exchange: 'exchange'};
   });
   const publisher = await publisherFactory.newPublisher();
 

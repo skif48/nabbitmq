@@ -8,7 +8,7 @@ import { RabbitMqConnectionClosedError } from '../errors/rabbitmq-connection-clo
 import { RabbitMqConnectionError } from '../errors/rabbitmq-connection.error';
 import { RabbitMqConnectionFactory } from '../factories/rabbit-mq-connection-factory';
 import { ConsumerConfigs } from '../interfaces/consumer-configs';
-import { RabbitMqSetupFunction } from '../interfaces/rabbit-mq-setup-function';
+import { RabbitMqConsumerSetupFunction } from '../interfaces/rabbit-mq-setup-function';
 import { RabbitMqPeer } from '../interfaces/rabbitmq-peer';
 import { RabbitMqConnection } from './rabbitmq-connection';
 
@@ -25,7 +25,7 @@ export class Consumer implements RabbitMqPeer {
   private configs: ConsumerConfigs;
   private channel: Channel;
   private connection: RabbitMqConnection;
-  private customSetupFunction: RabbitMqSetupFunction;
+  private customSetupFunction: RabbitMqConsumerSetupFunction;
 
   constructor() {}
 
@@ -104,7 +104,7 @@ export class Consumer implements RabbitMqPeer {
    * Sets custom setup function
    * @param setupFunction custom setup function
    */
-  public setCustomSetupFunction(setupFunction: RabbitMqSetupFunction) {
+  public setCustomSetupFunction(setupFunction: RabbitMqConsumerSetupFunction) {
     this.customSetupFunction = setupFunction;
     this.rawConfigs = null;
     this.configs = null;
@@ -120,20 +120,23 @@ export class Consumer implements RabbitMqPeer {
     let channel: Channel;
     let prefetch: number;
     let autoAck: boolean;
+    let queue: string;
     if (this.customSetupFunction) {
       const functionResult = await this.customSetupFunction(amqpConnection);
       channel = functionResult.channel;
       prefetch = functionResult.prefetch;
       autoAck = functionResult.autoAck;
+      queue = functionResult.queue;
       this.channel = channel;
       this.subject = new ReplaySubject<Message>(prefetch || DEFAULT_PREFETCH);
     } else {
       this.channel = await this.defaultSetup(amqpConnection);
       this.subject = new ReplaySubject<Message>(this.configs.prefetch);
+      queue = this.configs.queue.name;
     }
 
     await this.channel.consume(
-      this.configs.queue.name,
+      queue,
       (message: Message): void => {
         if (message === null)
           return void this.subject.error(new RabbitMqChannelCancelledError('The channel was cancelled by the server'));

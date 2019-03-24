@@ -9,7 +9,7 @@ import { RabbitMqConnectionError } from '../errors/rabbitmq-connection.error';
 import { RabbitMqPublisherConfirmationError } from '../errors/rabbitmq-publisher-confirmation.error';
 import { RabbitMqConnectionFactory } from '../factories/rabbit-mq-connection-factory';
 import { PublisherConfigs } from '../interfaces/publisher-configs';
-import { RabbitMqSetupFunction } from '../interfaces/rabbit-mq-setup-function';
+import { RabbitMqPublisherSetupFunction } from '../interfaces/rabbit-mq-setup-function';
 import { RabbitMqPeer } from '../interfaces/rabbitmq-peer';
 import { RabbitMqConnection } from './rabbitmq-connection';
 
@@ -25,7 +25,7 @@ export class Publisher implements RabbitMqPeer {
   private subject: BehaviorSubject<string>;
   private rawConfigs: PublisherConfigs;
   private configs: PublisherConfigs;
-  private customSetupFunction: RabbitMqSetupFunction;
+  private customSetupFunction: RabbitMqPublisherSetupFunction;
 
   constructor() {}
 
@@ -68,7 +68,7 @@ export class Publisher implements RabbitMqPeer {
    * Sets custom setup function. Accessible to users, but should only be used by PublisherFactory.
    * @param setupFunction function that sets up internal RabbitMQ structure
    */
-  public setCustomSetupFunction(setupFunction: RabbitMqSetupFunction) {
+  public setCustomSetupFunction(setupFunction: RabbitMqPublisherSetupFunction) {
     this.customSetupFunction = setupFunction;
     this.rawConfigs = null;
     this.configs = null;
@@ -83,8 +83,14 @@ export class Publisher implements RabbitMqPeer {
     const amqpConnection = this.connection.getAmqpConnection();
 
     if (this.customSetupFunction) {
-      const {channel} = await this.customSetupFunction(amqpConnection);
+      const {channel, exchange, publisherConfirms} = await this.customSetupFunction(amqpConnection);
       this.channel = channel;
+      this.configs = {
+        exchange: {
+          name: exchange,
+        },
+        publisherConfirms,
+      };
     } else
       this.channel = await this.defaultSetup(amqpConnection);
 
