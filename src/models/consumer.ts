@@ -52,17 +52,42 @@ export class Consumer implements RabbitMqPeer {
       filledConfigs.queue.bindingPattern = '';
 
     filledConfigs.autoAck = typeof filledConfigs.autoAck === 'undefined' ? false : filledConfigs.autoAck;
+
+    if (filledConfigs.prefetch < 1)
+      throw new Error('Prefetch count should be at least 1');
     filledConfigs.prefetch = filledConfigs.prefetch || DEFAULT_PREFETCH;
+
+    if (filledConfigs.reconnectAttempts < 0)
+      throw new Error('Reconnect attempts count should be at least 0');
     filledConfigs.reconnectAttempts = filledConfigs.reconnectAttempts || DEFAULT_RECONNECT_ATTEMPTS;
+
+    if (filledConfigs.reconnectTimeoutMillis < 0)
+      throw new Error('Reconnect timeout should be at least 0 ms');
     filledConfigs.reconnectTimeoutMillis = filledConfigs.reconnectTimeoutMillis || DEFAULT_RECONNECT_TIMEOUT_MILLIS;
 
-    if (typeof filledConfigs.noDeadLetterQueue !== 'undefined' && filledConfigs.noDeadLetterQueue === true)
+    if (typeof filledConfigs.noDeadLetterQueue !== 'undefined' && filledConfigs.noDeadLetterQueue === true) {
       delete filledConfigs.deadLetterQueue;
-    else {
+      delete filledConfigs.noDeadLetterQueue;
+    } else {
       filledConfigs.deadLetterQueue = filledConfigs.deadLetterQueue || {};
-      filledConfigs.deadLetterQueue.name = filledConfigs.deadLetterQueue.name || `dlq_${filledConfigs.queue.name}`;
-      filledConfigs.deadLetterQueue.exchangeName = filledConfigs.deadLetterQueue.exchangeName || `exchange_${filledConfigs.deadLetterQueue.name}`;
-      filledConfigs.deadLetterQueue.exchangeType = filledConfigs.deadLetterQueue.exchangeType || 'fanout';
+      filledConfigs.deadLetterQueue.queue = filledConfigs.deadLetterQueue.queue || {};
+      filledConfigs.deadLetterQueue.queue.name = filledConfigs.deadLetterQueue.queue.name || `dlq_${filledConfigs.queue.name}`;
+      filledConfigs.deadLetterQueue.queue.durable = typeof filledConfigs.deadLetterQueue.queue.durable === 'undefined' ? true : filledConfigs.deadLetterQueue.queue.durable;
+      filledConfigs.deadLetterQueue.queue.arguments = filledConfigs.deadLetterQueue.queue.arguments || {};
+
+      filledConfigs.deadLetterQueue.exchange = filledConfigs.deadLetterQueue.exchange || {};
+      filledConfigs.deadLetterQueue.exchange.name = filledConfigs.deadLetterQueue.exchange.name || `exchange_${filledConfigs.deadLetterQueue.queue.name}`;
+      filledConfigs.deadLetterQueue.exchange.type = filledConfigs.deadLetterQueue.exchange.type || 'direct';
+      filledConfigs.deadLetterQueue.exchange.durable = typeof filledConfigs.deadLetterQueue.exchange.durable === 'undefined' ? true : filledConfigs.deadLetterQueue.exchange.durable;
+      filledConfigs.deadLetterQueue.exchange.arguments = filledConfigs.deadLetterQueue.exchange.arguments || {};
+
+      if (filledConfigs.deadLetterQueue.exchange.type === 'topic' && !filledConfigs.deadLetterQueue.queue.bindingPattern)
+        throw new Error('In case of topic exchanges, routing pattern has to be provided for the queue');
+
+      if (filledConfigs.deadLetterQueue.exchange.type === 'direct')
+        filledConfigs.deadLetterQueue.queue.bindingPattern = filledConfigs.deadLetterQueue.queue.bindingPattern || `${filledConfigs.deadLetterQueue.queue.name}_rk`;
+      else if (filledConfigs.deadLetterQueue.exchange.type === 'fanout')
+        filledConfigs.deadLetterQueue.queue.bindingPattern = '';
     }
 
     return filledConfigs;
@@ -73,16 +98,16 @@ export class Consumer implements RabbitMqPeer {
     const exchangeOptions: { [x: string]: any } = {};
 
     if (this.configs.deadLetterQueue) {
-      await channel.assertExchange(this.configs.deadLetterQueue.exchangeName, this.configs.deadLetterQueue.exchangeType);
-      const dlqMetadata = await channel.assertQueue(this.configs.deadLetterQueue.name);
-      await channel.bindQueue(dlqMetadata.queue, this.configs.deadLetterQueue.exchangeName, '');
+      await channel.assertExchange(this.configs.deadLetterQueue.exchange.name, this.configs.deadLetterQueue.exchange.type);
+      const dlqMetadata = await channel.assertQueue(this.configs.deadLetterQueue.queue.name);
+      await channel.bindQueue(dlqMetadata.queue, this.configs.deadLetterQueue.exchange.name, '');
     }
 
     await channel.assertExchange(this.configs.exchange.name, this.configs.exchange.type, exchangeOptions);
     const queueMetadata = await channel.assertQueue(this.configs.queue.name, {
       durable: this.configs.queue.durable,
       arguments: this.configs.queue.arguments,
-      deadLetterExchange: this.configs.deadLetterQueue ? this.configs.deadLetterQueue.name : undefined,
+      deadLetterExchange: this.configs.deadLetterQueue ? this.configs.deadLetterQueue.queue.name : undefined,
     });
 
     await channel.bindQueue(queueMetadata.queue, this.configs.exchange.name, this.configs.queue.bindingPattern, this.configs.queue.arguments);
@@ -169,7 +194,7 @@ export class Consumer implements RabbitMqPeer {
         .catch(() => {}); // to avoid loud unhandled promise rejections
     }).pipe(
       timeout(this.configs.reconnectTimeoutMillis || DEFAULT_RECONNECT_TIMEOUT_MILLIS),
-      retry(this.configs.reconnectTimeoutMillis || DEFAULT_RECONNECT_ATTEMPTS),
+      retry(this.configs.reconnectAttempts || DEFAULT_RECONNECT_ATTEMPTS),
     );
   }
 

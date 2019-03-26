@@ -18,8 +18,17 @@ export interface ConsumerConfigs {
   reconnectAttempts?: number;
   noDeadLetterQueue?: boolean;
   deadLetterQueue?: {
-    name?: string;
-    exchangeName?: string;
-    exchangeType?: string;
+    queue?: {
+      name?: string;
+      bindingPattern?: string;
+      durable?: boolean;
+      arguments?: { [x: string]: any };
+    };
+    exchange?: {
+      name?: string;
+      type?: string;
+      durable?: boolean;
+      arguments?: { [x: string]: any };
+    };
   };
 }
