@@ -1,15 +1,25 @@
+import * as amqp from "amqplib";
+
 export interface ConsumerConfigs {
   queue: {
     name: string;
     bindingPattern?: string;
-    durable?: boolean;
-    arguments?: { [x: string]: any };
+    options?: {
+      exclusive?: boolean;
+      durable?: boolean;
+      autoDelete?: boolean;
+      arguments?: any;
+      messageTtl?: number;
+      expires?: number;
+      maxLength?: number;
+      maxPriority?: number;
+    };
   };
   exchange?: {
     name?: string;
     type?: string;
     durable?: boolean;
-    arguments?: { [x: string]: any };
+    options?: amqp.Options.AssertExchange;
   };
   prefetch?: number;
   autoAck?: boolean;
@@ -21,14 +31,12 @@ export interface ConsumerConfigs {
     queue?: {
       name?: string;
       bindingPattern?: string;
-      durable?: boolean;
-      arguments?: { [x: string]: any };
+      options?: amqp.Options.AssertQueue;
     };
     exchange?: {
       name?: string;
       type?: string;
-      durable?: boolean;
-      arguments?: { [x: string]: any };
+      options?: amqp.Options.AssertExchange;
     };
   };
 }

@@ -1,9 +1,10 @@
+import * as amqp from "amqplib";
+
 export interface PublisherConfigs {
   exchange: {
     name: string;
     type?: string;
-    durable?: boolean;
-    arguments?: { [x: string]: any };
+    options?: amqp.Options.AssertExchange;
   };
   publisherConfirms?: boolean;
   reconnectTimeoutMillis?: number;

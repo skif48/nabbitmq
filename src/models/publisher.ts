@@ -34,8 +34,7 @@ export class Publisher implements RabbitMqPeer {
     if (!filledConfigs.exchange || !filledConfigs.exchange.name)
       throw new Error('Name of the exchange has to be provided');
 
-    filledConfigs.exchange.durable = typeof filledConfigs.exchange.durable === 'undefined' ? true : filledConfigs.exchange.durable;
-    filledConfigs.exchange.arguments = filledConfigs.exchange.arguments || {};
+    filledConfigs.exchange.options = filledConfigs.exchange.options || {durable: true};
     filledConfigs.exchange.type = filledConfigs.exchange.type || 'direct';
 
     filledConfigs.publisherConfirms = typeof filledConfigs.publisherConfirms === 'undefined' ? true : filledConfigs.publisherConfirms;
@@ -46,11 +45,8 @@ export class Publisher implements RabbitMqPeer {
   }
 
   private async defaultSetup(connection: Connection): Promise<Channel|ConfirmChannel> {
-    const exchangeOptions: { [x: string]: any } = {};
-    exchangeOptions.durable = this.configs.exchange.durable;
-    exchangeOptions.arguments = this.configs.exchange.arguments || {};
     const channel = this.configs.publisherConfirms ? await connection.createConfirmChannel() : await connection.createChannel();
-    await channel.assertExchange(this.configs.exchange.name, this.configs.exchange.type, exchangeOptions);
+    await channel.assertExchange(this.configs.exchange.name, this.configs.exchange.type, this.configs.exchange.options);
 
     return channel;
   }
