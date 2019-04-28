@@ -35,10 +35,18 @@ export class Publisher implements RabbitMqPeer {
       throw new Error('Name of the exchange has to be provided');
 
     filledConfigs.exchange.options = filledConfigs.exchange.options || {durable: true};
-    filledConfigs.exchange.type = filledConfigs.exchange.type || 'direct';
+    if (typeof filledConfigs.exchange.options.durable === 'undefined')
+      filledConfigs.exchange.options.durable = true;
 
+    filledConfigs.exchange.type = filledConfigs.exchange.type || 'direct';
     filledConfigs.publisherConfirms = typeof filledConfigs.publisherConfirms === 'undefined' ? true : filledConfigs.publisherConfirms;
+
+    if (filledConfigs.reconnectAttempts < 0 && filledConfigs.reconnectAttempts !== -1)
+      throw new Error('Reconnect attempts count should be at least 0');
     filledConfigs.reconnectAttempts = filledConfigs.reconnectAttempts || DEFAULT_RECONNECT_ATTEMPTS;
+
+    if (filledConfigs.reconnectTimeoutMillis < 0)
+      throw new Error('Reconnect timeout should be at least 0 ms');
     filledConfigs.reconnectTimeoutMillis = filledConfigs.reconnectTimeoutMillis || DEFAULT_RECONNECT_TIMEOUT_MILLIS;
 
     return filledConfigs;

@@ -61,7 +61,7 @@ export class Consumer implements RabbitMqPeer {
       throw new Error('Prefetch count should be at least 1');
     filledConfigs.prefetch = filledConfigs.prefetch || DEFAULT_PREFETCH;
 
-    if (filledConfigs.reconnectAttempts < 0)
+    if (filledConfigs.reconnectAttempts < 0 && filledConfigs.reconnectAttempts !== -1)
       throw new Error('Reconnect attempts count should be at least 0');
     filledConfigs.reconnectAttempts = filledConfigs.reconnectAttempts || DEFAULT_RECONNECT_ATTEMPTS;
 
