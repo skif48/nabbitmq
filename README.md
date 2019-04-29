@@ -14,6 +14,9 @@
 npm install --save nabbitmq
 ```
 
+### API Docs
+Detailed API docs can be found [here](https://skif48.github.io/nabbitmq/). Generated with [TypeDoc](https://typedoc.org/).
+
 ### Project status
 Project is being actively developed and improved. Any suggestions, help and criticism are warmly welcomed.  
 
@@ -95,25 +98,37 @@ Here is an example of how consumer configs object will look like, when there was
 const configs = { 
   queue: { 
     name: 'my_queue',
-    durable: true, // queue persistence is enabled by default
-    arguments: {}, // empty arguments for queue to assert by default
     bindingPattern: 'my_queue_rk', // routing key name: `${your queue name}_rk`
+    options: {
+      durable: true, // queue persistence is enabled by default
+    },
   },
   exchange: { 
     name: 'exchange_my_queue', // exchange name: `exchange_${your queue name}`
-    durable: true, // exchange persistence is enabled by default
-    arguments: {}, // empty arguments for exchange to assert by default
     type: 'direct', // direct binding type by default with a name
+    options: {
+      durable: true, // exchange persistence is enabled by default
+    },
   },
   autoAck: false, // RabbitMQ acknowledge on send is disabled by default, meaning that by default you have to commit your messages.
   prefetch: 100, // consumer prefetch
   reconnectAttempts: -1, // infinite amount of reconnect attempts
   reconnectTimeoutMillis: 1000, // 1 second window between failing reconnect attempts
   deadLetterQueue: { // dead letter queue is built and bound by default
-    name: 'dlq_my_queue', // dead letter queue name: `dlq_${your queue name}`
-    exchangeName: 'exchange_dlq_my_queue', // dead letter queue exchange name: `exchange_${dead letter queue name}`
-    exchangeType: 'fanout', // fanout type for dead letter exchange by default 
-  }
+    queue: {
+      name: 'dlq_my_queue', // dead letter queue name: `dlq_${your queue name}`
+      options: {
+        durable: true, // dead letter queue is also persistent by default
+      },
+    },
+    exchange: {
+      name: 'exchange_dlq_my_queue', // dead letter queue exchange name: `exchange_${dead letter queue name}`
+      type: 'fanout',  // fanout type by default
+      options: {
+        durable: true, // dead letter exchange persistent by default
+      },
+    },
+  },
 };
 ```
 
@@ -124,8 +139,9 @@ Here is an example of publisher configs with *my_exchange* exchange name:
 const configs = { 
   exchange: {
     name: 'my_exchange',
-    durable: true, // exchange persistence is enabled by default
-    arguments: {}, // empty arguments for exchange to assert by default
+    options: {
+      durable: true,  // exchange persistence is enabled by default
+    },
     type: 'direct', // direct binding type by default
   },
   publisherConfirms: true, // publisher confirmations are enabled by default
@@ -136,7 +152,7 @@ const configs = {
 ### Usage
 **Setting up topic exchange type**
 ```typescript
-import { ConsumerFactory, PublisherFactory, RabbitMqConnectionFactory } from '../src';
+import { ConsumerFactory, PublisherFactory, RabbitMqConnectionFactory } from 'nabbitmq';
 
 async function main() {
   const connectionFactory = new RabbitMqConnectionFactory();
@@ -151,7 +167,6 @@ async function main() {
     exchange: {
       name: 'exchange',
       type: 'topic',
-      durable: false,
     },
     prefetch: 50,
   });
@@ -189,7 +204,7 @@ Let's see how we can achieve the same as in the example above, but instead of co
 For [publishers](https://skif48.github.io/nabbitmq/globals.html#rabbitmqpublishersetupfunction) and [consumers](https://skif48.github.io/nabbitmq/globals.html#rabbitmqconsumersetupfunction) there are different type aliases and requirements for these functions.
 
 ```typescript
-import { RabbitMqConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqPublisherConfirmationError } from '../src';
+import { RabbitMqConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqPublisherConfirmationError } from 'nabbitmq';
 
 async function main() {
   const connectionFactory = new RabbitMqConnectionFactory();
@@ -297,9 +312,6 @@ export class ConsumerService {
 ```
 
 The same logic can be reproduced for publisher instances.
-
-### API Docs
-Detailed API docs can be found [here](https://skif48.github.io/nabbitmq/). Generated with [TypeDoc](https://typedoc.org/).
 
 ### License
 NabbitMQ is MIT Licensed.
