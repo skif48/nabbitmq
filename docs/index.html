@@ -69,9 +69,12 @@
 					<h1>NabbitMQ</h1>
 				</p>
 				<p><strong>Node.js library for interacting with RabbitMQ based on RxJS streams</strong></p>
-				<p><a href="https://badge.fury.io/js/nabbitmq"><img src="https://badge.fury.io/js/nabbitmq.svg" alt="npm version"></a></p>
+				<p><a href="https://badge.fury.io/js/nabbitmq"><img src="https://badge.fury.io/js/nabbitmq.svg" alt="npm version"></a>
+				<a href="https://circleci.com/gh/skif48/nabbitmq"><img src="https://circleci.com/gh/skif48/nabbitmq.svg?style=svg" alt="CircleCI"></a></p>
 				<h3 id="installation">Installation</h3>
 				<pre><code class="language-bash">npm install --save nabbitmq</code></pre>
+				<h3 id="api-docs">API Docs</h3>
+				<p>Detailed API docs can be found <a href="https://skif48.github.io/nabbitmq/">here</a>. Generated with <a href="https://typedoc.org/">TypeDoc</a>.</p>
 				<h3 id="project-status">Project status</h3>
 				<p>Project is being actively developed and improved. Any suggestions, help and criticism are warmly welcomed.  </p>
 				<h3 id="description">Description</h3>
@@ -130,34 +133,47 @@ main();
 				<pre><code class="language-javascript"><span class="hljs-keyword">const</span> configs = {
   <span class="hljs-attr">queue</span>: { 
     <span class="hljs-attr">name</span>: <span class="hljs-string">'my_queue'</span>,
-    <span class="hljs-attr">durable</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// queue persistence is enabled by default</span>
-    <span class="hljs-built_in">arguments</span>: {}, <span class="hljs-comment">// empty arguments for queue to assert by default</span>
-    bindingPattern: <span class="hljs-string">'my_queue_rk'</span>, <span class="hljs-comment">// routing key name: `${your queue name}_rk`</span>
+    <span class="hljs-attr">bindingPattern</span>: <span class="hljs-string">'my_queue_rk'</span>, <span class="hljs-comment">// routing key name: `${your queue name}_rk`</span>
+    options: {
+      <span class="hljs-attr">durable</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// queue persistence is enabled by default</span>
+    },
   },
   <span class="hljs-attr">exchange</span>: { 
     <span class="hljs-attr">name</span>: <span class="hljs-string">'exchange_my_queue'</span>, <span class="hljs-comment">// exchange name: `exchange_${your queue name}`</span>
-    durable: <span class="hljs-literal">true</span>, <span class="hljs-comment">// exchange persistence is enabled by default</span>
-    <span class="hljs-built_in">arguments</span>: {}, <span class="hljs-comment">// empty arguments for exchange to assert by default</span>
     type: <span class="hljs-string">'direct'</span>, <span class="hljs-comment">// direct binding type by default with a name</span>
+    options: {
+      <span class="hljs-attr">durable</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// exchange persistence is enabled by default</span>
+    },
   },
   <span class="hljs-attr">autoAck</span>: <span class="hljs-literal">false</span>, <span class="hljs-comment">// RabbitMQ acknowledge on send is disabled by default, meaning that by default you have to commit your messages.</span>
   prefetch: <span class="hljs-number">100</span>, <span class="hljs-comment">// consumer prefetch</span>
   reconnectAttempts: <span class="hljs-number">-1</span>, <span class="hljs-comment">// infinite amount of reconnect attempts</span>
   reconnectTimeoutMillis: <span class="hljs-number">1000</span>, <span class="hljs-comment">// 1 second window between failing reconnect attempts</span>
   deadLetterQueue: { <span class="hljs-comment">// dead letter queue is built and bound by default</span>
-    name: <span class="hljs-string">'dlq_my_queue'</span>, <span class="hljs-comment">// dead letter queue name: `dlq_${your queue name}`</span>
-    exchangeName: <span class="hljs-string">'exchange_dlq_my_queue'</span>, <span class="hljs-comment">// dead letter queue exchange name: `exchange_${dead letter queue name}`</span>
-    exchangeType: <span class="hljs-string">'fanout'</span>, <span class="hljs-comment">// fanout type for dead letter exchange by default </span>
-  }
+    queue: {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">'dlq_my_queue'</span>, <span class="hljs-comment">// dead letter queue name: `dlq_${your queue name}`</span>
+      options: {
+        <span class="hljs-attr">durable</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// dead letter queue is also persistent by default</span>
+      },
+    },
+    <span class="hljs-attr">exchange</span>: {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">'exchange_dlq_my_queue'</span>, <span class="hljs-comment">// dead letter queue exchange name: `exchange_${dead letter queue name}`</span>
+      type: <span class="hljs-string">'fanout'</span>,  <span class="hljs-comment">// fanout type by default</span>
+      options: {
+        <span class="hljs-attr">durable</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// dead letter exchange persistent by default</span>
+      },
+    },
+  },
 };</code></pre>
 				<p>As for publisher, the only required field is the name of the exchange to publish to, everything else will be filled with default values by publisher itself.
 				Here is an example of publisher configs with <em>my_exchange</em> exchange name:</p>
 				<pre><code class="language-javascript"><span class="hljs-keyword">const</span> configs = {
   <span class="hljs-attr">exchange</span>: {
     <span class="hljs-attr">name</span>: <span class="hljs-string">'my_exchange'</span>,
-    <span class="hljs-attr">durable</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// exchange persistence is enabled by default</span>
-    <span class="hljs-built_in">arguments</span>: {}, <span class="hljs-comment">// empty arguments for exchange to assert by default</span>
-    type: <span class="hljs-string">'direct'</span>, <span class="hljs-comment">// direct binding type by default</span>
+    <span class="hljs-attr">options</span>: {
+      <span class="hljs-attr">durable</span>: <span class="hljs-literal">true</span>,  <span class="hljs-comment">// exchange persistence is enabled by default</span>
+    },
+    <span class="hljs-attr">type</span>: <span class="hljs-string">'direct'</span>, <span class="hljs-comment">// direct binding type by default</span>
   },
   <span class="hljs-attr">publisherConfirms</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// publisher confirmations are enabled by default</span>
   reconnectAttempts: <span class="hljs-number">-1</span>, <span class="hljs-comment">// infinite amount of reconnect attempts</span>
@@ -165,7 +181,7 @@ main();
 };</code></pre>
 				<h3 id="usage">Usage</h3>
 				<p><strong>Setting up topic exchange type</strong></p>
-				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { ConsumerFactory, PublisherFactory, RabbitMqConnectionFactory } <span class="hljs-keyword">from</span> <span class="hljs-string">'../src'</span>;
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { ConsumerFactory, PublisherFactory, RabbitMqConnectionFactory } <span class="hljs-keyword">from</span> <span class="hljs-string">'nabbitmq'</span>;
 
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">const</span> connectionFactory = <span class="hljs-keyword">new</span> RabbitMqConnectionFactory();
@@ -180,7 +196,6 @@ main();
     exchange: {
       name: <span class="hljs-string">'exchange'</span>,
       <span class="hljs-keyword">type</span>: <span class="hljs-string">'topic'</span>,
-      durable: <span class="hljs-literal">false</span>,
     },
     prefetch: <span class="hljs-number">50</span>,
   });
@@ -211,25 +226,26 @@ main();
 main();
 </code></pre>
 				<p><strong>With custom setup function</strong></p>
-				<p>Let&#39;s see how we can achieve the same as in the example above, but instead of config objects we&#39;re going to supply a custom setup function.</p>
-				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { RabbitMqConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqPublisherConfirmationError } <span class="hljs-keyword">from</span> <span class="hljs-string">'../src'</span>;
+				<p>Let&#39;s see how we can achieve the same as in the example above, but instead of config objects we&#39;re going to supply a custom setup function.
+				For <a href="https://skif48.github.io/nabbitmq/globals.html#rabbitmqpublishersetupfunction">publishers</a> and <a href="https://skif48.github.io/nabbitmq/globals.html#rabbitmqconsumersetupfunction">consumers</a> there are different type aliases and requirements for these functions.</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { RabbitMqConnectionFactory, ConsumerFactory, PublisherFactory, RabbitMqChannelCancelledError, RabbitMqChannelClosedError, RabbitMqConnectionClosedError, RabbitMqPublisherConfirmationError } <span class="hljs-keyword">from</span> <span class="hljs-string">'nabbitmq'</span>;
 
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">const</span> connectionFactory = <span class="hljs-keyword">new</span> RabbitMqConnectionFactory();
   connectionFactory.setUri(<span class="hljs-string">'amqp://localhost:5672'</span>);
   <span class="hljs-keyword">const</span> rabbitMqConnection = <span class="hljs-keyword">await</span> connectionFactory.newConnection();
   <span class="hljs-keyword">const</span> consumerFactory = <span class="hljs-keyword">new</span> ConsumerFactory(rabbitMqConnection);
-  consumerFactory.setCustomSetupFunction(<span class="hljs-keyword">async</span> (connection) =&gt; { <span class="hljs-comment">// setting up our function</span>
+  consumerFactory.setCustomSetupFunction(<span class="hljs-keyword">async</span> (connection) =&gt; {
     <span class="hljs-keyword">const</span> channel = <span class="hljs-keyword">await</span> connection.createChannel();
     <span class="hljs-keyword">await</span> channel.assertExchange(<span class="hljs-string">'exchange'</span>, <span class="hljs-string">'topic'</span>, {});
     <span class="hljs-keyword">const</span> queueMetadata = <span class="hljs-keyword">await</span> channel.assertQueue(<span class="hljs-string">'queue'</span>, {
       durable: <span class="hljs-literal">true</span>,
     });
 
-    <span class="hljs-keyword">await</span> channel.bindQueue(queueMetadata.queue, <span class="hljs-string">'exchange'</span>, <span class="hljs-string">'route.#'</span>, <span class="hljs-keyword">this</span>.configs.queue.arguments);
-    <span class="hljs-keyword">await</span> channel.prefetch(<span class="hljs-number">50</span>);
+    <span class="hljs-keyword">await</span> channel.bindQueue(queueMetadata.queue, <span class="hljs-string">'exchange'</span>, <span class="hljs-string">'route.#'</span>);
+    <span class="hljs-keyword">await</span> channel.prefetch(<span class="hljs-number">10</span>);
 
-    <span class="hljs-keyword">return</span> {channel, prefetch: <span class="hljs-number">50</span>, autoAck: <span class="hljs-literal">false</span>}; <span class="hljs-comment">// returning an object with channel, prefetch count and automatic acknowledgments flag. Prefetch is optional, auto ack flag too</span>
+    <span class="hljs-keyword">return</span> {channel, queue: <span class="hljs-string">'queue'</span>, prefetch: <span class="hljs-number">10</span>, autoAck: <span class="hljs-literal">false</span>};
   });
 
   <span class="hljs-keyword">const</span> consumer = <span class="hljs-keyword">await</span> consumerFactory.newConsumer();
@@ -248,6 +264,8 @@ main();
 
       <span class="hljs-keyword">if</span> (error <span class="hljs-keyword">instanceof</span> RabbitMqChannelCancelledError)
         <span class="hljs-keyword">return</span> <span class="hljs-built_in">void</span> <span class="hljs-built_in">console</span>.error(<span class="hljs-string">'Channel cancellation occurred'</span>);
+
+      <span class="hljs-comment">// ... and so on</span>
     },
   });
 
@@ -260,8 +278,8 @@ main();
       durable: <span class="hljs-literal">true</span>,
     });
 
-    <span class="hljs-keyword">await</span> channel.bindQueue(queueMetadata.queue, <span class="hljs-string">'exchange'</span>, <span class="hljs-string">'route.#'</span>, <span class="hljs-keyword">this</span>.configs.queue.arguments);
-    <span class="hljs-keyword">return</span> {channel}; <span class="hljs-comment">// returning an object with channel</span>
+    <span class="hljs-keyword">await</span> channel.bindQueue(queueMetadata.queue, <span class="hljs-string">'exchange'</span>, <span class="hljs-string">'route.#'</span>);
+    <span class="hljs-keyword">return</span> {channel, exchange: <span class="hljs-string">'exchange'</span>};
   });
   <span class="hljs-keyword">const</span> publisher = <span class="hljs-keyword">await</span> publisherFactory.newPublisher();
 
@@ -270,6 +288,8 @@ main();
     error: <span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
       <span class="hljs-keyword">if</span> (error <span class="hljs-keyword">instanceof</span> RabbitMqPublisherConfirmationError)
         <span class="hljs-keyword">return</span> <span class="hljs-built_in">void</span> <span class="hljs-built_in">console</span>.error(<span class="hljs-string">'Sent message failed to be confirmed'</span>);
+
+      <span class="hljs-comment">// ... and so on</span>
     },
   });
 
@@ -310,8 +330,6 @@ main();</code></pre>
   }
 }</code></pre>
 				<p>The same logic can be reproduced for publisher instances.</p>
-				<h3 id="api-docs">API Docs</h3>
-				<p>Detailed API docs can be found <a href="https://skif48.github.io/nabbitmq/">here</a>. Generated with <a href="https://typedoc.org/">TypeDoc</a>.</p>
 				<h3 id="license">License</h3>
 				<p>NabbitMQ is MIT Licensed.</p>
 			</div>
@@ -370,6 +388,9 @@ main();</code></pre>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/rabbitmqpublishersetuperror.html" class="tsd-kind-icon">Rabbit<wbr>MqPublisher<wbr>Setup<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rabbitmqreconnecterror.html" class="tsd-kind-icon">Rabbit<wbr>MqReconnect<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/consumerconfigs.html" class="tsd-kind-icon">Consumer<wbr>Configs</a>
