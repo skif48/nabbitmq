@@ -18,7 +18,6 @@ export interface ConsumerConfigs {
   exchange?: {
     name?: string;
     type?: string;
-    durable?: boolean;
     options?: amqp.Options.AssertExchange;
   };
   prefetch?: number;
@@ -31,7 +30,16 @@ export interface ConsumerConfigs {
     queue?: {
       name?: string;
       bindingPattern?: string;
-      options?: amqp.Options.AssertQueue;
+      options?: {
+        exclusive?: boolean;
+        durable?: boolean;
+        autoDelete?: boolean;
+        arguments?: any;
+        messageTtl?: number;
+        expires?: number;
+        maxLength?: number;
+        maxPriority?: number;
+      };
     };
     exchange?: {
       name?: string;
