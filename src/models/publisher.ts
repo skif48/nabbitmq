@@ -1,12 +1,13 @@
 import { Channel, ConfirmChannel, Connection } from 'amqplib';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Observable } from 'rxjs/internal/Observable';
-import { retry, timeout } from 'rxjs/operators';
+import { catchError, retry, timeout } from 'rxjs/operators';
 import { RabbitMqChannelClosedError } from '../errors/rabbitmq-channel-closed.error';
 import { RabbitMqChannelError } from '../errors/rabbitmq-channel.error';
 import { RabbitMqConnectionClosedError } from '../errors/rabbitmq-connection-closed.error';
 import { RabbitMqConnectionError } from '../errors/rabbitmq-connection.error';
 import { RabbitMqPublisherConfirmationError } from '../errors/rabbitmq-publisher-confirmation.error';
+import { RabbitMqReconnectError } from '../errors/rabbitmq-reconnect.error';
 import { RabbitMqConnectionFactory } from '../factories/rabbit-mq-connection-factory';
 import { PublisherConfigs } from '../interfaces/publisher-configs';
 import { RabbitMqPublisherSetupFunction } from '../interfaces/rabbit-mq-setup-function';
@@ -34,23 +35,27 @@ export class Publisher implements RabbitMqPeer {
     if (!filledConfigs.exchange || !filledConfigs.exchange.name)
       throw new Error('Name of the exchange has to be provided');
 
-    filledConfigs.exchange.durable = typeof filledConfigs.exchange.durable === 'undefined' ? true : filledConfigs.exchange.durable;
-    filledConfigs.exchange.arguments = filledConfigs.exchange.arguments || {};
-    filledConfigs.exchange.type = filledConfigs.exchange.type || 'direct';
+    filledConfigs.exchange.options = filledConfigs.exchange.options || {durable: true};
+    if (typeof filledConfigs.exchange.options.durable === 'undefined')
+      filledConfigs.exchange.options.durable = true;
 
+    filledConfigs.exchange.type = filledConfigs.exchange.type || 'direct';
     filledConfigs.publisherConfirms = typeof filledConfigs.publisherConfirms === 'undefined' ? true : filledConfigs.publisherConfirms;
+
+    if (filledConfigs.reconnectAttempts < 0 && filledConfigs.reconnectAttempts !== -1)
+      throw new Error('Reconnect attempts count should be at least 0');
     filledConfigs.reconnectAttempts = filledConfigs.reconnectAttempts || DEFAULT_RECONNECT_ATTEMPTS;
+
+    if (filledConfigs.reconnectTimeoutMillis < 0)
+      throw new Error('Reconnect timeout should be at least 0 ms');
     filledConfigs.reconnectTimeoutMillis = filledConfigs.reconnectTimeoutMillis || DEFAULT_RECONNECT_TIMEOUT_MILLIS;
 
     return filledConfigs;
   }
 
   private async defaultSetup(connection: Connection): Promise<Channel|ConfirmChannel> {
-    const exchangeOptions: { [x: string]: any } = {};
-    exchangeOptions.durable = this.configs.exchange.durable;
-    exchangeOptions.arguments = this.configs.exchange.arguments || {};
     const channel = this.configs.publisherConfirms ? await connection.createConfirmChannel() : await connection.createChannel();
-    await channel.assertExchange(this.configs.exchange.name, this.configs.exchange.type, exchangeOptions);
+    await channel.assertExchange(this.configs.exchange.name, this.configs.exchange.type, this.configs.exchange.options);
 
     return channel;
   }
@@ -105,13 +110,12 @@ export class Publisher implements RabbitMqPeer {
   /**
    * Reconnects to the server. Retries given or default (infinite) amount of times. Return an observable that completes when connection is established again.
    */
-  public reconnect(): Observable<void> {
+  public reconnect() {
     const connectionFactory = new RabbitMqConnectionFactory();
     if (this.connection.getUri())
       connectionFactory.setUri(this.connection.getUri());
     else
       connectionFactory.setOptions(this.connection.getOptions());
-
     return new Observable<void>((subscriber) => {
       connectionFactory
         .newConnection()
@@ -119,8 +123,12 @@ export class Publisher implements RabbitMqPeer {
         .then(() => subscriber.complete())
         .catch(() => {}); // to avoid loud unhandled promise rejections
     }).pipe(
-      timeout(this.configs.reconnectTimeoutMillis),
-      retry(this.configs.reconnectAttempts),
+      timeout(this.configs.reconnectTimeoutMillis || DEFAULT_RECONNECT_TIMEOUT_MILLIS),
+      retry(this.configs.reconnectAttempts ? this.configs.reconnectAttempts - 1 : DEFAULT_RECONNECT_ATTEMPTS),
+    ).pipe(
+      catchError(() => {
+        throw new RabbitMqReconnectError('Failed to reconnect');
+      }),
     );
   }
 

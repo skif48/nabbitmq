@@ -6,7 +6,7 @@ export class RabbitMqConnectionError extends RabbitMqError {
     public readonly code?: string,
   ) {
     super(message);
-
+    this.name = 'RabbitMqConnectionError';
     Object.setPrototypeOf(this, RabbitMqConnectionError.prototype);
   }
 }

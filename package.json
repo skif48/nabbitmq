@@ -9,7 +9,8 @@
     "example_with_reconnect": "nodemon --config ./examples/reconnect.nodemon.config.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json"
+    "lint": "tslint -p tsconfig.json",
+    "unit_tests": "ts-mocha --path ./test/unit/*.spec.ts"
   },
   "files": [
     "lib/**/*"
@@ -35,12 +36,20 @@
   "homepage": "https://github.com/skif48/nabbit#readme",
   "dependencies": {
     "@types/amqplib": "^0.5.9",
+    "@types/chai": "^4.1.7",
     "amqplib": "^0.5.3",
     "rxjs": "^6.4.0"
   },
   "devDependencies": {
+    "@types/mocha": "^5.2.6",
     "@types/node": "^10.12.21",
+    "chai": "^4.2.0",
+    "coveralls": "^3.0.3",
+    "mocha": "^6.0.2",
+    "nyc": "^14.0.0",
     "prettier": "^1.16.4",
+    "sinon": "^7.3.0",
+    "ts-mocha": "^6.0.0",
     "ts-node": "^8.0.2",
     "tslint": "^5.12.1",
     "tslint-config-prettier": "^1.17.0",

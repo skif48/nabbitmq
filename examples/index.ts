@@ -13,7 +13,9 @@ async function main() {
     exchange: {
       name: 'exchange',
       type: 'topic',
-      durable: false,
+      options: {
+        durable: false,
+      },
     },
     prefetch: 50,
     autoAck: false,
@@ -34,8 +36,11 @@ async function main() {
     exchange: {
       name: 'exchange',
       type: 'topic',
+      options: {
+        durable: false,
+      },
     },
-    publisherConfirms: false,
+    publisherConfirms: true,
   });
   const publisher = await publisherFactory.newPublisher();
   publisher.actionsStream().subscribe({next: console.log, error: console.error});

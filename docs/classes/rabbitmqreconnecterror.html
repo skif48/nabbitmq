@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RabbitMqChannelCancelledError | nabbitmq</title>
+	<title>RabbitMqReconnectError | nabbitmq</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="rabbitmqchannelcancellederror.html">RabbitMqChannelCancelledError</a>
+					<a href="rabbitmqreconnecterror.html">RabbitMqReconnectError</a>
 				</li>
 			</ul>
-			<h1>Class RabbitMqChannelCancelledError</h1>
+			<h1>Class RabbitMqReconnectError</h1>
 		</div>
 	</div>
 </header>
@@ -73,7 +73,7 @@
 						<a href="rabbitmqerror.html" class="tsd-signature-type">RabbitMqError</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">RabbitMqChannelCancelledError</span>
+								<span class="target">RabbitMqReconnectError</span>
 							</li>
 						</ul>
 					</li>
@@ -86,15 +86,15 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="rabbitmqchannelcancellederror.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="rabbitmqreconnecterror.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="rabbitmqchannelcancellederror.html#message" class="tsd-kind-icon">message</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="rabbitmqchannelcancellederror.html#name" class="tsd-kind-icon">name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="rabbitmqchannelcancellederror.html#stack" class="tsd-kind-icon">stack</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="rabbitmqreconnecterror.html#message" class="tsd-kind-icon">message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="rabbitmqreconnecterror.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="rabbitmqreconnecterror.html#stack" class="tsd-kind-icon">stack</a></li>
 							</ul>
 						</section>
 					</div>
@@ -106,14 +106,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Rabbit<wbr>MqChannel<wbr>Cancelled<wbr>Error<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="rabbitmqchannelcancellederror.html" class="tsd-signature-type">RabbitMqChannelCancelledError</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Rabbit<wbr>MqReconnect<wbr>Error<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="rabbitmqreconnecterror.html" class="tsd-signature-type">RabbitMqReconnectError</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="rabbitmqerror.html">RabbitMqError</a>.<a href="rabbitmqerror.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/skif48/nabbit/blob/f0f2dac/src/errors/rabbitmq-channel-cancelled.error.ts#L3">errors/rabbitmq-channel-cancelled.error.ts:3</a></li>
+									<li>Defined in <a href="https://github.com/skif48/nabbit/blob/f0f2dac/src/errors/rabbitmq-reconnect.error.ts#L3">errors/rabbitmq-reconnect.error.ts:3</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -122,7 +122,7 @@
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> message: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="rabbitmqchannelcancellederror.html" class="tsd-signature-type">RabbitMqChannelCancelledError</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="rabbitmqreconnecterror.html" class="tsd-signature-type">RabbitMqReconnectError</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -187,27 +187,9 @@
 					<li class=" tsd-kind-class">
 						<a href="publisherfactory.html" class="tsd-kind-icon">Publisher<wbr>Factory</a>
 					</li>
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-class">
+					<li class=" tsd-kind-class">
 						<a href="rabbitmqchannelcancellederror.html" class="tsd-kind-icon">Rabbit<wbr>MqChannel<wbr>Cancelled<wbr>Error</a>
-						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-								<a href="rabbitmqchannelcancellederror.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-								<a href="rabbitmqchannelcancellederror.html#message" class="tsd-kind-icon">message</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-								<a href="rabbitmqchannelcancellederror.html#name" class="tsd-kind-icon">name</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
-								<a href="rabbitmqchannelcancellederror.html#stack" class="tsd-kind-icon">stack</a>
-							</li>
-						</ul>
 					</li>
-				</ul>
-				<ul class="after-current">
 					<li class=" tsd-kind-class">
 						<a href="rabbitmqchannelclosederror.html" class="tsd-kind-icon">Rabbit<wbr>MqChannel<wbr>Closed<wbr>Error</a>
 					</li>
@@ -238,9 +220,27 @@
 					<li class=" tsd-kind-class">
 						<a href="rabbitmqpublishersetuperror.html" class="tsd-kind-icon">Rabbit<wbr>MqPublisher<wbr>Setup<wbr>Error</a>
 					</li>
-					<li class=" tsd-kind-class">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
 						<a href="rabbitmqreconnecterror.html" class="tsd-kind-icon">Rabbit<wbr>MqReconnect<wbr>Error</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+								<a href="rabbitmqreconnecterror.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+								<a href="rabbitmqreconnecterror.html#message" class="tsd-kind-icon">message</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+								<a href="rabbitmqreconnecterror.html#name" class="tsd-kind-icon">name</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
+								<a href="rabbitmqreconnecterror.html#stack" class="tsd-kind-icon">stack</a>
+							</li>
+						</ul>
 					</li>
+				</ul>
+				<ul class="after-current">
 					<li class=" tsd-kind-interface">
 						<a href="../interfaces/consumerconfigs.html" class="tsd-kind-icon">Consumer<wbr>Configs</a>
 					</li>

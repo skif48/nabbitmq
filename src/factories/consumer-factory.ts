@@ -42,6 +42,9 @@ export class ConsumerFactory {
   public async newConsumer(): Promise<Consumer> {
     try {
       const consumer = new Consumer();
+      if (!this.customSetupFunction && !this.configs)
+        throw new Error('Either custom consumer setup function or configs must be provided');
+
       if (this.customSetupFunction)
         consumer.setCustomSetupFunction(this.customSetupFunction);
       else
