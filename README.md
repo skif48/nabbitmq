@@ -49,19 +49,19 @@ You can find examples under the examples folder. There are required nodemon conf
 This snippet demonstrates how you can easily spin up a solid RabbitMQ setup and quickly start to consume a stream of events from it. Under the hood, NabbitMQ creates all necessary bindings, exchanges, dead letter queues and provides you with **reconnect logic**.
 
 ```typescript
-import { ConnectionFactory, ConsumerFactory, PublisherFactory } from 'nabbitmq';
+import { RabbitMqConnectionFactory, ConsumerFactory, PublisherFactory } from 'nabbitmq';
 
 async function main() {
-  const connectionFactory = new ConnectionFactory();
-  connectionFactory.setUri('amqp://localhost:5672');
-  const connection = await connectionFactory.newConnection();
+  const RabbitMqConnectionFactory = new RabbitMqConnectionFactory();
+  RabbitMqConnectionFactory.setUri('amqp://localhost:5672');
+  const connection = await RabbitMqConnectionFactory.newConnection();
   const consumerFactory = new ConsumerFactory(connection);
   consumerFactory.setConfigs({queue: {name: 'super_queue'}});
   const consumer = await consumerFactory.newConsumer();
 
   consumer.startConsuming().subscribe({next: console.log, error: console.error});
 
-  const anotherConnection = await connectionFactory.newConnection();
+  const anotherConnection = await RabbitMqConnectionFactory.newConnection();
   const publisherFactory = new PublisherFactory(anotherConnection);
   publisherFactory.setConfigs({exchange: {name: consumer.getActiveConfigs().exchange.name}});
   const publisher = await publisherFactory.newPublisher();
