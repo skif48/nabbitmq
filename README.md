@@ -6,6 +6,7 @@
 **Node.js library for interacting with RabbitMQ based on RxJS streams**
 
 [![npm version](https://badge.fury.io/js/nabbitmq.svg)](https://badge.fury.io/js/nabbitmq)
+[![CircleCI](https://circleci.com/gh/skif48/nabbitmq.svg?style=svg)](https://circleci.com/gh/skif48/nabbitmq)
 
 ### Installation
 
