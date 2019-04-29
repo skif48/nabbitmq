@@ -40,6 +40,10 @@ NabbitMQ has **its own set of error classes**, therefore it makes it easy for de
 
 In the end, the main principle and goal is to have a solid and reliable solution out of the box, while working with RabbitMQ.
 
+### Examples
+
+You can find examples under the examples folder. There are required nodemon configs and also a docker container of RabbitMq with management plugin within for your convenience. 
+
 ### Quick start
 
 This snippet demonstrates how you can easily spin up a solid RabbitMQ setup and quickly start to consume a stream of events from it. Under the hood, NabbitMQ creates all necessary bindings, exchanges, dead letter queues and provides you with **reconnect logic**.
